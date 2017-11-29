@@ -2,7 +2,7 @@
 version: '2.1'
 
 services:
-  spring-boot-template-api:
+  job-scheduler-api:
     build:
       context: .
       args:
@@ -18,7 +18,6 @@ services:
       - REFORM_TEAM
       - REFORM_ENVIRONMENT
     volumes:
-      - ./build/install/spring-boot-template:/opt/app/
+      - ./build/install/job-scheduler:/opt/app/
     ports:
-      # TODO: change this mapping to map the port your application listens on
-      - 4550:4550
+      - 8484:8484
