@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.jobscheduler.model.Job;
 @Service
 public class JobsService {
 
-    public String create(Job job) {
+    public String create(Job job, String serviceName) {
         throw new NotImplementedException();
     }
 }

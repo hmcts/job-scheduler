@@ -12,10 +12,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.jobscheduler.SampleData;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.services.JobsService;
+import uk.gov.hmcts.reform.jobscheduler.services.S2sClient;
 
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -28,6 +30,7 @@ public class CreateTest {
 
     @Autowired private MockMvc mockMvc;
     @MockBean private JobsService jobsService;
+    @MockBean private S2sClient s2sClient;
 
     @Test
     public void should_return_201_when_job_is_created() throws Exception {
@@ -38,7 +41,7 @@ public class CreateTest {
     @Test
     public void should_fill_location_header_on_successful_save() throws Exception {
         String id = "1234abcd";
-        given(jobsService.create(any(Job.class)))
+        given(jobsService.create(any(Job.class), anyString()))
             .willReturn(id);
 
         send(SampleData.validJobJson())
@@ -49,6 +52,7 @@ public class CreateTest {
         return mockMvc.perform(
             post("/jobs")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("ServiceAuthorization", "some-service-auth-header")
                 .content(content)
         );
     }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.jobscheduler;
 
+import feign.FeignException;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,5 +17,10 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NotImplementedException.class)
     protected ResponseEntity handleNotImplemented(NotImplementedException exc, WebRequest req) {
         return status(HttpStatus.NOT_IMPLEMENTED).build();
+    }
+
+    @ExceptionHandler(FeignException.class)
+    protected ResponseEntity handleFeignException(FeignException exc, WebRequest req) {
+        return status(exc.status()).build();
     }
 }
