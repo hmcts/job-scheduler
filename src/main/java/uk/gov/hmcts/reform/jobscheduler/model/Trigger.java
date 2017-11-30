@@ -21,11 +21,11 @@ public class Trigger {
     }
 
     public enum Frequency {
-        second,
-        minute,
-        hour,
-        day,
-        week,
-        month
+        @JsonProperty("second") SECOND,
+        @JsonProperty("minute") MINUTE,
+        @JsonProperty("hour") HOUR,
+        @JsonProperty("day") DAY,
+        @JsonProperty("week") WEEK,
+        @JsonProperty("month") MONTH
     }
 }
