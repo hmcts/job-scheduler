@@ -4,3 +4,6 @@ server:
 management:
   security:
     enabled: ${MANAGEMENT_SECURITY_ENABLED:true}
+
+s2s:
+  url: ${S2S_URL}

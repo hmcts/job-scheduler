@@ -3,6 +3,8 @@
 /out/
 !gradle/wrapper/gradle-wrapper.jar
 
+/src/main/resources/application-default.yaml
+
 ### STS ###
 .apt_generated
 .classpath
