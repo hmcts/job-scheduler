@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.jobscheduler.SampleData;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.services.JobsService;
+import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthException;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.S2sClient;
 
@@ -47,6 +48,15 @@ public class CreateTest {
 
         send(SampleData.validJobJson())
             .andExpect(header().string(LOCATION, endsWith("/jobs/" + id)));
+    }
+
+    @Test
+    public void should_return_401_when_token_is_invalid() throws Exception {
+        given(authService.authenticate(anyString()))
+            .willThrow(new AuthException(null, null));
+
+        send(SampleData.validJobJson())
+            .andExpect(status().isUnauthorized());
     }
 
     private ResultActions send(String content) throws Exception {
