@@ -12,7 +12,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.jobscheduler.SampleData;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.services.JobsService;
-import uk.gov.hmcts.reform.jobscheduler.services.S2sClient;
+import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
+import uk.gov.hmcts.reform.jobscheduler.services.auth.S2sClient;
 
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.mockito.BDDMockito.given;
@@ -30,7 +31,7 @@ public class CreateTest {
 
     @Autowired private MockMvc mockMvc;
     @MockBean private JobsService jobsService;
-    @MockBean private S2sClient s2sClient;
+    @MockBean private AuthService authService;
 
     @Test
     public void should_return_201_when_job_is_created() throws Exception {

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.jobscheduler.services;
+package uk.gov.hmcts.reform.jobscheduler.services.auth;
 
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestHeader;
