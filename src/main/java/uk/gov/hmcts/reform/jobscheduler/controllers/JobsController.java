@@ -1,5 +1,6 @@
-package uk.gov.hmcts.reform.jobscheduler.contollers;
+package uk.gov.hmcts.reform.jobscheduler.controllers;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,7 @@ public class JobsController {
     }
 
     @PostMapping(path = "")
+    @ApiOperation("Create a new job")
     public ResponseEntity<Void> create(
         @RequestBody Job job,
         @RequestHeader("ServiceAuthorization") String serviceAuthHeader
