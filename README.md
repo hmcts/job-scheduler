@@ -15,6 +15,11 @@ Run the application by executing:
 ./gradlew bootRun
 ```
 
+## API documentation
+Api documentation is provided with Swagger:
+- json spec: [http://localhost:8484/v2/api-docs](http://localhost:8484/v2/api-docs)
+- swagger UI: [http://localhost:8484/swagger-ui.html](http://localhost:8484/swagger-ui.html)
+
 ## Developing
 
 ### Unit tests

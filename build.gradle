@@ -73,6 +73,9 @@ dependencies {
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard', version: '1.4.0.RELEASE'
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '1.4.0.RELEASE'
 
+  compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
+  compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
+
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
   testCompile group: 'org.json', name: 'json', version: '20171018'
 
