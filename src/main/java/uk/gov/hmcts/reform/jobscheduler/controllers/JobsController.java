@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
-import uk.gov.hmcts.reform.jobscheduler.services.JobsService;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
 
 import java.net.URI;

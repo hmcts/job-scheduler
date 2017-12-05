@@ -1,6 +1,13 @@
 package uk.gov.hmcts.reform.jobscheduler;
 
+import com.google.common.collect.ImmutableMap;
 import org.json.JSONObject;
+import org.springframework.http.HttpMethod;
+import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
+import uk.gov.hmcts.reform.jobscheduler.model.Job;
+import uk.gov.hmcts.reform.jobscheduler.model.Trigger;
+
+import java.time.ZonedDateTime;
 
 public final class SampleData {
 
@@ -26,5 +33,22 @@ public final class SampleData {
                 .put("start_date_time", "2042-08-11T12:11:00Z")
             )
             .toString();
+    }
+
+    public static Job validJob() {
+        return new Job(
+            "my-job-name",
+            new HttpAction(
+                "https://not-existing-service.gov.uk/do-stuff",
+                HttpMethod.POST,
+                ImmutableMap.of("Authorization", "token-goes-here"),
+                null
+            ),
+            new Trigger(
+                Trigger.Frequency.DAY,
+                1,
+                ZonedDateTime.now()
+            )
+        );
     }
 }
