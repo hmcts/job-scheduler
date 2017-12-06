@@ -19,4 +19,14 @@ public class ActionSerializerTest {
 
         assertThat(outputAction).isEqualToComparingFieldByField(inputAction);
     }
+
+    @Test
+    public void should_serialize_and_deserialize_null() {
+        ActionSerializer s = new ActionSerializer();
+
+        String jsonAction = s.serialize(null);
+        HttpAction outputAction = s.deserialize(jsonAction);
+
+        assertThat(outputAction).isNull();
+    }
 }
