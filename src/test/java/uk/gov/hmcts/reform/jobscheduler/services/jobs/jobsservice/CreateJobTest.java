@@ -13,8 +13,8 @@ import org.quartz.Trigger;
 import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.ActionSerializer;
-import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 
 import java.sql.Date;
 
