@@ -60,6 +60,10 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: springBootVersion
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: springBootVersion
+  // compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: springBootVersion
+  // todo: use spring-boot-starter-quartz after migrating to Spring Boot 2
+
+  compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.0'
 
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
   compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310'
