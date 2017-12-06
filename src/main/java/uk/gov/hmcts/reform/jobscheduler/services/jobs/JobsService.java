@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
 
 import java.util.Date;
 import java.util.UUID;
@@ -46,7 +47,10 @@ public class JobsService {
 
     public void delete(String id, String serviceName) {
         try {
-            scheduler.deleteJob(JobKey.jobKey(id, serviceName));
+            boolean jobFound = scheduler.deleteJob(JobKey.jobKey(id, serviceName));
+            if (!jobFound) {
+                throw new JobNotFoundException();
+            }
         } catch (SchedulerException exc) {
             throw new JobException(
                 "Error while deleting job. ID: " + id + " group: " + serviceName,

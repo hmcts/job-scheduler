@@ -37,7 +37,7 @@ public class JobsController {
         @RequestBody Job job,
         @RequestHeader("ServiceAuthorization") String serviceAuthHeader
     ) {
-        String serviceName = "hello";//authService.authenticate(serviceAuthHeader);
+        String serviceName = authService.authenticate(serviceAuthHeader);
         String id = this.jobsService.create(job, serviceName);
 
         URI newJobUri = fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
@@ -51,7 +51,7 @@ public class JobsController {
         @PathVariable("id") String id,
         @RequestHeader("ServiceAuthorization") String serviceAuthHeader
     ) {
-        String serviceName = "hello";//authService.authenticate(serviceAuthHeader);
+        String serviceName = authService.authenticate(serviceAuthHeader);
         jobsService.delete(id, serviceName);
 
         return ok().build();

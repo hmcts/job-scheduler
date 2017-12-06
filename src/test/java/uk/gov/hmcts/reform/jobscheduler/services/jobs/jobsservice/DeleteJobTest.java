@@ -9,8 +9,10 @@ import org.quartz.SchedulerException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.ActionSerializer;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -39,5 +41,30 @@ public class DeleteJobTest {
             .isInstanceOf(JobException.class)
             .hasMessageContaining(serviceName)
             .hasMessageContaining(id);
+    }
+
+    @Test
+    public void should_throw_exception_if_job_wasnt_found() throws Exception {
+        // given
+        given(scheduler.deleteJob(any())).willReturn(false);
+        JobsService jobsService = new JobsService(scheduler, actionSerializer);
+
+        // when
+        Throwable exc = catchThrowable(() -> jobsService.delete("abc123", "my service name"));
+
+        // then
+        assertThat(exc)
+            .isInstanceOf(JobNotFoundException.class);
+    }
+
+    @Test
+    public void shouldnt_throw_exception_if_job_was_found() throws Exception {
+        // given
+        given(scheduler.deleteJob(any())).willReturn(true);
+        JobsService jobsService = new JobsService(scheduler, actionSerializer);
+
+        // then
+        assertThatCode(() -> jobsService.delete("abc123", "my service name"))
+            .doesNotThrowAnyException();
     }
 }
