@@ -11,9 +11,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.jobscheduler.SampleData;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
-import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthException;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.mockito.BDDMockito.given;

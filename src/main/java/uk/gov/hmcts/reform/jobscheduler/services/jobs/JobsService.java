@@ -27,16 +27,15 @@ public class JobsService {
     public String create(Job job, String serviceName) {
         try {
             String id = UUID.randomUUID().toString();
-            scheduler
-                .scheduleJob(
-                    newJob(HttpCallJob.class)
-                        .withIdentity(id, serviceName)
-                        .usingJobData(HttpCallJob.PARAMS_KEY, serializer.serialize(job.action))
-                        .build(),
-                    newTrigger()
-                        .startAt(Date.from(job.trigger.startDateTime.toInstant()))
-                        .build()
-                );
+            scheduler.scheduleJob(
+                newJob(HttpCallJob.class)
+                    .withIdentity(id, serviceName)
+                    .usingJobData(HttpCallJob.PARAMS_KEY, serializer.serialize(job.action))
+                    .build(),
+                newTrigger()
+                    .startAt(Date.from(job.trigger.startDateTime.toInstant()))
+                    .build()
+            );
             return id;
 
         } catch (SchedulerException exc) {
