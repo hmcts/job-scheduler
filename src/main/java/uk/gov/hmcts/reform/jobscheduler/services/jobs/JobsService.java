@@ -5,6 +5,7 @@ import org.quartz.SchedulerException;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 
 import java.util.Date;
 import java.util.UUID;

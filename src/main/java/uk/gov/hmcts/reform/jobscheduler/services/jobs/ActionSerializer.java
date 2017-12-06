@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobActionSerializationException;
 
 @Component
 public class ActionSerializer {
@@ -16,12 +17,6 @@ public class ActionSerializer {
             return objectMapper.writeValueAsString(action);
         } catch (JsonProcessingException exc) {
             throw new JobActionSerializationException("Unable to serialize action", exc);
-        }
-    }
-
-    public static class JobActionSerializationException extends RuntimeException {
-        public JobActionSerializationException(String message, Throwable cause) {
-            super(message, cause);
         }
     }
 }
