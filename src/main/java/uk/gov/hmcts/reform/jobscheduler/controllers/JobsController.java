@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.jobscheduler.controllers;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 import java.net.URI;
 
 import static org.springframework.http.ResponseEntity.created;
+import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 @RestController
@@ -40,5 +43,17 @@ public class JobsController {
         URI newJobUri = fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
 
         return created(newJobUri).build();
+    }
+
+    @DeleteMapping(path = "/{id}")
+    @ApiOperation("Delete job by id")
+    public ResponseEntity<Void> delete(
+        @PathVariable("id") String id,
+        @RequestHeader("ServiceAuthorization") String serviceAuthHeader
+    ) {
+        String serviceName = authService.authenticate(serviceAuthHeader);
+        jobsService.delete(id, serviceName);
+
+        return ok().build();
     }
 }

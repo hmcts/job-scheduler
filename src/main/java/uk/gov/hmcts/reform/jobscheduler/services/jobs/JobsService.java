@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.jobscheduler.services.jobs;
 
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
 
 import java.util.Date;
 import java.util.UUID;
@@ -40,6 +42,20 @@ public class JobsService {
 
         } catch (SchedulerException exc) {
             throw new JobException("Error while scheduling a job", exc);
+        }
+    }
+
+    public void delete(String id, String serviceName) {
+        try {
+            boolean jobFound = scheduler.deleteJob(JobKey.jobKey(id, serviceName));
+            if (!jobFound) {
+                throw new JobNotFoundException();
+            }
+        } catch (SchedulerException exc) {
+            throw new JobException(
+                "Error while deleting job. ID: " + id + " group: " + serviceName,
+                exc
+            );
         }
     }
 
