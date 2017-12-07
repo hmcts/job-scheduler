@@ -10,6 +10,7 @@ services:
         - https_proxy
         - no_proxy
     environment:
+      - S2S_URL
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
       - JSON_CONSOLE_PRETTY_PRINT
