@@ -26,8 +26,8 @@ public class DeleteTest {
     @MockBean private AuthService authService;
 
     @Test
-    public void should_return_200_when_job_is_deleted() throws Exception {
-        sendDelete().andExpect(status().isOk());
+    public void should_return_204_when_job_is_deleted() throws Exception {
+        sendDelete().andExpect(status().isNoContent());
     }
 
     @Test
