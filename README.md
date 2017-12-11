@@ -5,10 +5,18 @@
 The job scheduler micro service allows other services to schedule http actions in the future. For example, scheduler
 can send a POST request to a specified url every Sunday at 2am.
 
+![diagram](docs/diagram.png)
+
 ## Getting started
 
 ### Prerequisites
 - [JDK 8](https://java.com)
+
+### External service dependencies
+
+In order to validate service auth tokens, Job Scheduler sends http requests to S2S Service.  
+URL to S2S can be configured via the config file or using environment variables.  
+S2S Service is currently not open source.
 
 ### Running
 Run the application by executing:
