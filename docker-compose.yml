@@ -11,6 +11,9 @@ services:
         - no_proxy
     environment:
       - S2S_URL
+      - JOB_SCHEDULER_DB_HOST
+      - JOB_SCHEDULER_DB_PORT
+      - JOB_SCHEDULER_DB_PASSWORD
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
       - JSON_CONSOLE_PRETTY_PRINT
@@ -22,3 +25,19 @@ services:
       - ./build/install/job-scheduler:/opt/app/
     ports:
       - 8484:8484
+    depends_on:
+      job-scheduler-database:
+        condition: service_healthy
+  job-scheduler-database:
+    build:
+      context: docker/database
+    image: docker.artifactory.reform.hmcts.net/reform/job-scheduler-database
+    environment:
+      - JOB_SCHEDULER_DB_PASSWORD
+    ports:
+      - 5428:5432
+    volumes:
+      - job-scheduler-database-data:/var/lib/postgresql/data
+
+volumes:
+  job-scheduler-database-data:
