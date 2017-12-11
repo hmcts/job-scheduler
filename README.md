@@ -5,6 +5,8 @@
 The job scheduler micro service allows other services to schedule http actions in the future. For example, scheduler
 can send a POST request to a specified url every Sunday at 2am.
 
+![diagram](docs/diagram.png)
+
 ## Getting started
 
 ### Prerequisites
