@@ -27,3 +27,22 @@ spring:
     abandonWhenPercentageFull: 0
     testOnBorrow: true
     validationQuery: SELECT 1
+
+quartzProperties:
+  org.quartz:
+    scheduler:
+      instanceId: AUTO
+    dataSource:
+      jobscheduler:
+        driver: org.postgresql.Driver
+        URL: ${spring.datasource.url}
+        user: jobscheduler
+        password: test
+    jobStore:
+      isClustered: true
+      class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+      dataSource: jobscheduler
+    threadPool:
+      class: org.quartz.simpl.SimpleThreadPool
+      threadCount: 8
