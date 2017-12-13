@@ -9,7 +9,9 @@ import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static org.quartz.JobBuilder.newJob;
@@ -60,4 +62,7 @@ public class JobsService {
         }
     }
 
+    public List<Job> getAll(String serviceName) {
+        return Collections.emptyList();
+    }
 }
