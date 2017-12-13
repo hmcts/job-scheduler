@@ -7,9 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 
+@Component
 public class HttpCallJob implements Job {
 
     public static final String PARAMS_KEY = "params";
