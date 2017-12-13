@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
+import uk.gov.hmcts.reform.jobscheduler.model.JobList;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthException;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
@@ -33,31 +34,33 @@ public class GetAllTest {
     @MockBean private AuthService authService;
 
     @Test
-    public void should_return_an_empty_list() throws Exception {
-        when(jobsService.getAll(anyString())).thenReturn(Collections.emptyList());
+    public void should_return_no_data_when_empty_job_list_is_returned() throws Exception {
+        String emptyResponse = "{\"data\":[]}";
+
+        when(jobsService.getAll(anyString())).thenReturn(new JobList(Collections.emptyList()));
 
         sendGet()
             .andExpect(status().isOk())
-            .andExpect(content().json("[]"));
+            .andExpect(content().json(emptyResponse));
         sendGet("/jobs?page=1")
             .andExpect(status().isOk())
-            .andExpect(content().json("[]"));
+            .andExpect(content().json(emptyResponse));
         sendGet("/jobs?size=1")
             .andExpect(status().isOk())
-            .andExpect(content().json("[]"));
+            .andExpect(content().json(emptyResponse));
         sendGet("/jobs?page=1&size=1")
             .andExpect(status().isOk())
-            .andExpect(content().json("[]"));
+            .andExpect(content().json(emptyResponse));
     }
 
     @Test
-    public void should_return_a_list() throws Exception {
+    public void should_return_some_data_when_non_empty_list_is_returned() throws Exception {
         Job job = validJob();
-        when(jobsService.getAll(anyString())).thenReturn(Collections.singletonList(job));
+        when(jobsService.getAll(anyString())).thenReturn(new JobList(Collections.singletonList(job)));
 
         sendGet()
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].action").exists());
+            .andExpect(jsonPath("data[0].action").exists());
     }
 
     @Test

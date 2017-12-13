@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.jobscheduler.services.jobs;
 
-import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -8,11 +7,12 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
+import uk.gov.hmcts.reform.jobscheduler.model.JobList;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -66,18 +66,16 @@ public class JobsService {
         }
     }
 
-    public List<Job> getAll(String serviceName) {
-        return getFromScheduler(scheduler::getJobKeys, GroupMatcher.jobGroupEquals(serviceName))
-            .stream()
-            .map(jobKey -> {
-                JobDetail jobDetail = getFromScheduler(scheduler::getJobDetail, jobKey);
+    public JobList getAll(String serviceName) {
+        Set<JobKey> jobKeys = getFromScheduler(scheduler::getJobKeys, GroupMatcher.jobGroupEquals(serviceName));
 
-                return new Job(
-                    jobDetail.getDescription(),
-                    serializer.deserialize(jobDetail.getJobDataMap().getString(HttpCallJob.PARAMS_KEY)),
-                    null
-                );
-            })
-            .collect(Collectors.toList());
+        return new JobList(jobKeys
+            .stream()
+            .map(jobKey -> Job.fromJobDetail(
+                getFromScheduler(scheduler::getJobDetail, jobKey),
+                serializer
+            ))
+            .collect(Collectors.toList())
+        );
     }
 }

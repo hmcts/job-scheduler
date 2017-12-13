@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
+import uk.gov.hmcts.reform.jobscheduler.model.JobList;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
 import java.net.URI;
-import java.util.List;
 
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
@@ -66,7 +66,7 @@ public class JobsController {
     @ApiResponses({
         @ApiResponse(code = 200, message = "Success")
     })
-    public List<Job> getAll(
+    public JobList getAll(
         @RequestHeader("ServiceAuthorization") String serviceAuthHeader
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);

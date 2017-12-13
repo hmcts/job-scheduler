@@ -12,12 +12,11 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
-import uk.gov.hmcts.reform.jobscheduler.model.Job;
+import uk.gov.hmcts.reform.jobscheduler.model.JobList;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.ActionSerializer;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -41,12 +40,12 @@ public class GetAllJobTest {
     }
 
     @Test
-    public void should_return_empty_list() throws SchedulerException {
+    public void should_return_empty_list_when_there_are_no_scheduled_jobs() throws SchedulerException {
         when(scheduler.getJobKeys(any())).thenReturn(Collections.emptySet());
 
-        List<Job> jobs = jobsService.getAll("service");
+        JobList jobs = jobsService.getAll("service");
 
-        assertThat(jobs).isEmpty();
+        assertThat(jobs.getData()).isEmpty();
         verify(scheduler, never()).getJobDetail(any());
     }
 
@@ -64,8 +63,8 @@ public class GetAllJobTest {
         when(jobDataMap.getString(HttpCallJob.PARAMS_KEY)).thenReturn("value");
         when(actionSerializer.deserialize("value")).thenReturn(action);
 
-        List<Job> jobs = jobsService.getAll("service");
+        JobList jobs = jobsService.getAll("service");
 
-        assertThat(jobs).extracting("action", HttpAction.class).contains(action);
+        assertThat(jobs.getData()).extracting("action", HttpAction.class).containsOnlyOnce(action);
     }
 }
