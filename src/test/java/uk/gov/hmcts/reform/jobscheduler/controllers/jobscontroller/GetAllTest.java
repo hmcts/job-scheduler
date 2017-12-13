@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthException;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
@@ -20,7 +21,9 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.jobscheduler.SampleData.validJob;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest
@@ -30,7 +33,7 @@ public class GetAllTest {
     @MockBean private AuthService authService;
 
     @Test
-    public void should_return_a_list() throws Exception {
+    public void should_return_an_empty_list() throws Exception {
         when(jobsService.getAll(anyString())).thenReturn(Collections.emptyList());
 
         sendGet()
@@ -45,6 +48,16 @@ public class GetAllTest {
         sendGet("/jobs?page=1&size=1")
             .andExpect(status().isOk())
             .andExpect(content().json("[]"));
+    }
+
+    @Test
+    public void should_return_a_list() throws Exception {
+        Job job = validJob();
+        when(jobsService.getAll(anyString())).thenReturn(Collections.singletonList(job));
+
+        sendGet()
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].action").exists());
     }
 
     @Test
