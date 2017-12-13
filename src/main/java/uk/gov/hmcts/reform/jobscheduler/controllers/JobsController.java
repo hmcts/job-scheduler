@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.jobscheduler.controllers;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,6 +62,10 @@ public class JobsController {
     }
 
     @GetMapping(path = "")
+    @ApiOperation("Get list of jobs for a service")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Success")
+    })
     public List<Job> getAll(
         @RequestHeader("ServiceAuthorization") String serviceAuthHeader
     ) {
