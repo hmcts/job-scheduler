@@ -33,6 +33,7 @@ public class JobsService {
                 newJob(HttpCallJob.class)
                     .withIdentity(id, serviceName)
                     .usingJobData(HttpCallJob.PARAMS_KEY, serializer.serialize(job.action))
+                    .requestRecovery()
                     .build(),
                 newTrigger()
                     .startAt(Date.from(job.trigger.startDateTime.toInstant()))
