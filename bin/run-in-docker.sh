@@ -2,4 +2,5 @@
 
 export JOB_SCHEDULER_DB_PASSWORD=test
 
-../gradlew clean installDist && docker-compose up
+cd $(dirname "$0")/..
+./gradlew clean installDist && docker-compose up
