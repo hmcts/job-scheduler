@@ -33,10 +33,11 @@ public class JobsService {
 
     public String create(Job job, String serviceName) {
         try {
-            String id = UUID.randomUUID().toString();
+            job.setId(UUID.randomUUID().toString());
+
             scheduler.scheduleJob(
                 newJob(HttpCallJob.class)
-                    .withIdentity(id, serviceName)
+                    .withIdentity(job.getId(), serviceName)
                     .withDescription(job.name)
                     .usingJobData(HttpCallJob.PARAMS_KEY, serializer.serialize(job.action))
                     .requestRecovery()
@@ -45,7 +46,8 @@ public class JobsService {
                     .startAt(Date.from(job.trigger.startDateTime.toInstant()))
                     .build()
             );
-            return id;
+
+            return job.getId();
 
         } catch (SchedulerException exc) {
             throw new JobException("Error while scheduling a job", exc);

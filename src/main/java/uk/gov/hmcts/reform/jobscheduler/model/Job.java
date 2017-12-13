@@ -11,6 +11,9 @@ public class Job {
     public final HttpAction action;
     public final Trigger trigger;
 
+    @JsonProperty("id")
+    private String id;
+
     public Job(
         @JsonProperty("name") String name,
         @JsonProperty("action") HttpAction action,
@@ -21,11 +24,23 @@ public class Job {
         this.trigger = trigger;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public static Job fromJobDetail(JobDetail jobDetail, ActionSerializer serializer) {
-        return new Job(
+        Job newJob = new Job(
             jobDetail.getDescription(),
             serializer.deserialize(jobDetail.getJobDataMap().getString(HttpCallJob.PARAMS_KEY)),
             null
         );
+
+        newJob.setId(jobDetail.getKey().getName());
+
+        return newJob;
     }
 }

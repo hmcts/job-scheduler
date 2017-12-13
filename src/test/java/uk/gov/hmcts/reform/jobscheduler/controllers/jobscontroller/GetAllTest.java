@@ -56,11 +56,13 @@ public class GetAllTest {
     @Test
     public void should_return_some_data_when_non_empty_list_is_returned() throws Exception {
         Job job = validJob();
+        job.setId("some-id");
         when(jobsService.getAll(anyString())).thenReturn(new JobList(Collections.singletonList(job)));
 
         sendGet()
             .andExpect(status().isOk())
-            .andExpect(jsonPath("data[0].action").exists());
+            .andExpect(jsonPath("data[0].action").exists())
+            .andExpect(jsonPath("data[0].id").value("some-id"));
     }
 
     @Test

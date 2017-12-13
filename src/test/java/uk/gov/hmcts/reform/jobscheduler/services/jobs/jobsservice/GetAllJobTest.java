@@ -60,11 +60,13 @@ public class GetAllJobTest {
         when(scheduler.getJobDetail(jobKey)).thenReturn(jobDetail);
         when(jobDetail.getDescription()).thenReturn("description");
         when(jobDetail.getJobDataMap()).thenReturn(jobDataMap);
+        when(jobDetail.getKey()).thenReturn(jobKey);
         when(jobDataMap.getString(HttpCallJob.PARAMS_KEY)).thenReturn("value");
         when(actionSerializer.deserialize("value")).thenReturn(action);
 
         JobList jobs = jobsService.getAll("service");
 
         assertThat(jobs.getData()).extracting("action", HttpAction.class).containsOnlyOnce(action);
+        assertThat(jobs.getData()).extracting("id", String.class).containsOnlyOnce(jobKey.getName());
     }
 }
