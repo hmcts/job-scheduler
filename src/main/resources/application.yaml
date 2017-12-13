@@ -7,3 +7,42 @@ management:
 
 s2s:
   url: ${S2S_URL}
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${JOB_SCHEDULER_DB_HOST:job-scheduler-database}:${JOB_SCHEDULER_DB_PORT:5432}/jobscheduler
+    username: jobscheduler
+    password: ${JOB_SCHEDULER_DB_PASSWORD:}
+    properties:
+      charSet: UTF-8
+    maxWaitForConnection: 1
+    minSize: 8
+    maxSize: 32
+    evictionInterval: 10
+    minIdleTime: 1 minute
+    checkConnectionWhileIdle: true
+    checkConnectionOnReturn: true
+    removeAbandoned: true
+    removeAbandonedTimeout: 60
+    abandonWhenPercentageFull: 0
+    testOnBorrow: true
+    validationQuery: SELECT 1
+
+quartzProperties:
+  org.quartz:
+    scheduler:
+      instanceId: AUTO
+    dataSource:
+      jobscheduler:
+        driver: org.postgresql.Driver
+        URL: ${spring.datasource.url}
+        user: jobscheduler
+        password: test
+    jobStore:
+      isClustered: true
+      class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+      dataSource: jobscheduler
+    threadPool:
+      class: org.quartz.simpl.SimpleThreadPool
+      threadCount: 8

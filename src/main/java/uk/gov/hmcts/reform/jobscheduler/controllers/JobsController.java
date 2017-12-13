@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 import java.net.URI;
 
 import static org.springframework.http.ResponseEntity.created;
-import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 @RestController
@@ -54,6 +54,6 @@ public class JobsController {
         String serviceName = authService.authenticate(serviceAuthHeader);
         jobsService.delete(id, serviceName);
 
-        return ok().build();
+        return noContent().build();
     }
 }
