@@ -2,10 +2,12 @@ package uk.gov.hmcts.reform.jobscheduler.config;
 
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.spi.JobFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,12 +26,28 @@ public class QuartzConfiguration {
     }
 
     @Bean
-    @Singleton
-    public Scheduler scheduler() throws SchedulerException {
+    public JobFactory jobFactory(ApplicationContext appCtx) {
+        AutowiringSpringBeanJobFactory jobFactory = new AutowiringSpringBeanJobFactory();
+        jobFactory.setApplicationContext(appCtx);
+
+        return jobFactory;
+    }
+
+    @Bean
+    public SchedulerFactoryBean schedulerFactoryBean(JobFactory jobFactory) {
         Properties properties = new Properties();
         properties.putAll(quartzProperties);
 
-        StdSchedulerFactory factory = new StdSchedulerFactory(properties);
+        SchedulerFactoryBean schedulerFactory = new SchedulerFactoryBean();
+        schedulerFactory.setJobFactory(jobFactory);
+        schedulerFactory.setQuartzProperties(properties);
+
+        return schedulerFactory;
+    }
+
+    @Bean
+    @Singleton
+    public Scheduler scheduler(SchedulerFactoryBean factory) throws SchedulerException {
         Scheduler scheduler = factory.getScheduler();
 
         scheduler.start();
