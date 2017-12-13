@@ -37,6 +37,7 @@ public class JobsService {
             scheduler.scheduleJob(
                 newJob(HttpCallJob.class)
                     .withIdentity(id, serviceName)
+                    .withDescription(job.name)
                     .usingJobData(HttpCallJob.PARAMS_KEY, serializer.serialize(job.action))
                     .requestRecovery()
                     .build(),
