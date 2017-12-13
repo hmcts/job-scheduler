@@ -9,7 +9,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.jobscheduler.config.ApplicationConfiguration;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -18,7 +21,8 @@ import static java.util.Collections.emptyMap;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = ApplicationConfiguration.class)
 public class HttpCallJobTest {
 
     @Rule
