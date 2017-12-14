@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,11 +20,14 @@ import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
 import java.net.URI;
 
+import javax.validation.Valid;
+
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 @RestController
+@Validated
 @RequestMapping(path = "/jobs")
 public class JobsController {
 
@@ -38,7 +42,7 @@ public class JobsController {
     @PostMapping(path = "")
     @ApiOperation("Create a new job")
     public ResponseEntity<Void> create(
-        @RequestBody Job job,
+        @Valid @RequestBody Job job,
         @RequestHeader("ServiceAuthorization") String serviceAuthHeader
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);

@@ -14,11 +14,15 @@ public final class SampleData {
     private SampleData() {
     }
 
-    public static String validJobJson() {
+    public static String jobJson() {
+        return jobJson("https://my-cool-service.gov.uk/do-something");
+    }
+
+    public static String jobJson(String targetUrl) {
         return new JSONObject()
             .put("name", "my-job-name")
             .put("action", new JSONObject()
-                .put("url", "https://my-cool-service.gov.uk/do-something")
+                .put("url", targetUrl)
                 .put("method", "POST")
                 .put("headers", new JSONObject()
                     .put("Authorization", "some-auth-token")

@@ -3,11 +3,15 @@ package uk.gov.hmcts.reform.jobscheduler.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.ZonedDateTime;
+import javax.validation.constraints.NotNull;
 
 public class Trigger {
 
     public final Frequency frequency;
+
     public final Integer interval;
+
+    @NotNull
     public final ZonedDateTime startDateTime;
 
     public Trigger(

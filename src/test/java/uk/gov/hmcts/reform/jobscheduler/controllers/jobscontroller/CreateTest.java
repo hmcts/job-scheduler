@@ -35,7 +35,7 @@ public class CreateTest {
 
     @Test
     public void should_return_201_when_job_is_created() throws Exception {
-        send(SampleData.validJobJson())
+        send(SampleData.jobJson())
             .andExpect(status().isCreated());
     }
 
@@ -45,8 +45,16 @@ public class CreateTest {
         given(jobsService.create(any(Job.class), anyString()))
             .willReturn(id);
 
-        send(SampleData.validJobJson())
+        send(SampleData.jobJson())
             .andExpect(header().string(LOCATION, endsWith("/jobs/" + id)));
+    }
+
+    @Test
+    public void should_validate_model() throws Exception {
+        String jobWithoutUrl = SampleData.jobJson("");
+
+        send(jobWithoutUrl)
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -54,7 +62,7 @@ public class CreateTest {
         given(authService.authenticate(anyString()))
             .willThrow(new AuthException(null, null));
 
-        send(SampleData.validJobJson())
+        send(SampleData.jobJson())
             .andExpect(status().isUnauthorized());
     }
 
