@@ -8,6 +8,12 @@ management:
 s2s:
   url: ${S2S_URL}
 
+idam:
+  s2s-auth:
+    url: ${S2S_URL}
+    totp_secret: ${TOTP_SECRET}
+    microservice: jobscheduler
+
 spring:
   datasource:
     url: jdbc:postgresql://${JOB_SCHEDULER_DB_HOST:job-scheduler-database}:${JOB_SCHEDULER_DB_PORT:5432}/jobscheduler
