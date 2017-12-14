@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.reform.jobscheduler.model.Job;
+import uk.gov.hmcts.reform.jobscheduler.model.JobData;
 import uk.gov.hmcts.reform.jobscheduler.model.JobList;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthException;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
@@ -55,13 +55,12 @@ public class GetAllTest {
 
     @Test
     public void should_return_some_data_when_non_empty_list_is_returned() throws Exception {
-        Job job = validJob();
-        job.setId("some-id");
+        JobData job = new JobData("some-id", validJob());
         when(jobsService.getAll(anyString())).thenReturn(new JobList(Collections.singletonList(job)));
 
         sendGet()
             .andExpect(status().isOk())
-            .andExpect(jsonPath("data[0].action").exists())
+            .andExpect(jsonPath("data[0].job.action").exists())
             .andExpect(jsonPath("data[0].id").value("some-id"));
     }
 

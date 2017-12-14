@@ -45,7 +45,7 @@ public class GetAllJobTest {
 
         JobList jobs = jobsService.getAll("service");
 
-        assertThat(jobs.getData()).isEmpty();
+        assertThat(jobs.data).isEmpty();
         verify(scheduler, never()).getJobDetail(any());
     }
 
@@ -66,7 +66,7 @@ public class GetAllJobTest {
 
         JobList jobs = jobsService.getAll("service");
 
-        assertThat(jobs.getData()).extracting("action", HttpAction.class).containsOnlyOnce(action);
-        assertThat(jobs.getData()).extracting("id", String.class).containsOnlyOnce(jobKey.getName());
+        assertThat(jobs.data).extracting("job.action", HttpAction.class).containsOnlyOnce(action);
+        assertThat(jobs.data).extracting("id", String.class).containsOnlyOnce("name");
     }
 }

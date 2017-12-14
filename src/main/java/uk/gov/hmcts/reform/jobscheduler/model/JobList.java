@@ -4,13 +4,9 @@ import java.util.List;
 
 public class JobList {
 
-    private final List<Job> data;
+    public final List<JobData> data;
 
-    public JobList(List<Job> data) {
+    public JobList(List<JobData> data) {
         this.data = data;
-    }
-
-    public List<Job> getData() {
-        return data;
     }
 }

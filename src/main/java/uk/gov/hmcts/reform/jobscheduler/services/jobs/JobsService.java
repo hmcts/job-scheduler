@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.jobscheduler.services.jobs;
 
+import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -7,6 +8,7 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
+import uk.gov.hmcts.reform.jobscheduler.model.JobData;
 import uk.gov.hmcts.reform.jobscheduler.model.JobList;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
@@ -33,11 +35,11 @@ public class JobsService {
 
     public String create(Job job, String serviceName) {
         try {
-            job.setId(UUID.randomUUID().toString());
+            String id = UUID.randomUUID().toString();
 
             scheduler.scheduleJob(
                 newJob(HttpCallJob.class)
-                    .withIdentity(job.getId(), serviceName)
+                    .withIdentity(id, serviceName)
                     .withDescription(job.name)
                     .usingJobData(HttpCallJob.PARAMS_KEY, serializer.serialize(job.action))
                     .requestRecovery()
@@ -47,7 +49,7 @@ public class JobsService {
                     .build()
             );
 
-            return job.getId();
+            return id;
 
         } catch (SchedulerException exc) {
             throw new JobException("Error while scheduling a job", exc);
@@ -73,11 +75,19 @@ public class JobsService {
 
         return new JobList(jobKeys
             .stream()
-            .map(jobKey -> Job.fromJobDetail(
-                getFromScheduler(scheduler::getJobDetail, jobKey),
-                serializer
+            .map(jobKey -> new JobData(
+                jobKey.getName(),
+                getJobFromDetail(getFromScheduler(scheduler::getJobDetail, jobKey))
             ))
             .collect(Collectors.toList())
+        );
+    }
+
+    private Job getJobFromDetail(JobDetail jobDetail) {
+        return new Job(
+            jobDetail.getDescription(),
+            serializer.deserialize(jobDetail.getJobDataMap().getString(HttpCallJob.PARAMS_KEY)),
+            null
         );
     }
 }
