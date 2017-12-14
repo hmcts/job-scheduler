@@ -27,9 +27,10 @@ public class HttpCallJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
-        HttpAction action = actionExtractor.extract(context);
+        String jobId = context.getJobDetail().getKey().getName();
+        logger.info("Executing job " + jobId);
 
-        logger.info("Sending request to " + action.url);
+        HttpAction action = actionExtractor.extract(context);
 
         ResponseEntity<String> response =
             restTemplate
@@ -40,7 +41,7 @@ public class HttpCallJob implements Job {
                     String.class
                 );
 
-        logger.info("Response code: " + response.getStatusCodeValue());
+        logger.info("Job {} executed. Response code: {}", jobId, response.getStatusCodeValue());
     }
 
     private static HttpEntity toHttpEntity(HttpAction action) {
