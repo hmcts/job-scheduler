@@ -12,7 +12,7 @@ idam:
   s2s-auth:
     url: ${S2S_URL}
     totp_secret: ${TOTP_SECRET}
-    microservice: jobscheduler
+    microservice: ${S2S_NAME:jobscheduler}
     tokenTimeToLiveInSeconds: 14400
 
 spring:
