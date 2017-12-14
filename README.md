@@ -24,6 +24,14 @@ Run the application by executing:
 ./gradlew bootRun
 ```
 
+In order to run the application (with its database) in Docker, execute:
+```bash
+./bin/run-in-docker.sh
+```
+
+This script creates a distribution archive for the project, sets up Docker containers
+for the application and job database (if those are not set up already) and starts the service.
+
 ## API documentation
 Api documentation is provided with Swagger:
 - json spec: [http://localhost:8484/v2/api-docs](http://localhost:8484/v2/api-docs)
@@ -43,6 +51,19 @@ To run all checks execute the following command:
 ```bash
 ./gradlew check
 ```
+
+## Job management
+
+The service manages its clients' jobs with (Quartz)[http://www.quartz-scheduler.org/].
+It uses a PostgreSQL database for persisting those jobs. Also, Quartz is configured
+to run in cluster mode, i.e. the load will be distributed among multiple nodes, each
+running different jobs.
+
+## Data security
+
+As of now, job information is stored in an unencrypted form. This means that clients
+of this service must not include any sensitive information (tokens, passwords, personally
+identifiable information, etc.) in their requests.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

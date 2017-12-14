@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.jobscheduler.controllers;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
+import uk.gov.hmcts.reform.jobscheduler.model.JobList;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
@@ -55,5 +59,18 @@ public class JobsController {
         jobsService.delete(id, serviceName);
 
         return noContent().build();
+    }
+
+    @GetMapping(path = "")
+    @ApiOperation("Get list of jobs for a service")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "Success")
+    })
+    public JobList getAll(
+        @RequestHeader("ServiceAuthorization") String serviceAuthHeader
+    ) {
+        String serviceName = authService.authenticate(serviceAuthHeader);
+
+        return jobsService.getAll(serviceName);
     }
 }
