@@ -23,6 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.mockito.BDDMockito.given;
+import static org.quartz.JobBuilder.newJob;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = ApplicationConfiguration.class)
@@ -44,6 +45,9 @@ public class HttpCallJobTest {
             post(urlEqualTo("/hello-world"))
                 .willReturn(aResponse().withStatus(200))
         );
+
+        given(context.getJobDetail())
+            .willReturn(newJob(HttpCallJob.class).withIdentity("id", "group").build());
 
         given(actionExtractor.extract(context))
             .willReturn(new HttpAction(
