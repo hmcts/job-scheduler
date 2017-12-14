@@ -75,7 +75,7 @@ public class JobsService {
 
         return new JobList(jobKeys
             .stream()
-            .map(jobKey -> new JobData(
+            .map(jobKey -> JobData.fromJob(
                 jobKey.getName(),
                 getJobFromDetail(getFromScheduler(scheduler::getJobDetail, jobKey))
             ))

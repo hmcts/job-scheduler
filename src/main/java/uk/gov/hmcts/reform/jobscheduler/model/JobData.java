@@ -1,17 +1,22 @@
 package uk.gov.hmcts.reform.jobscheduler.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public class JobData {
+public final class JobData {
 
     public final String id;
-    public final Job job;
+    public final String name;
+    public final HttpAction action;
 
-    public JobData(
-        @JsonProperty("id") String id,
-        @JsonProperty("job") Job job
+    private JobData(
+        String id,
+        String name,
+        HttpAction action
     ) {
         this.id = id;
-        this.job = job;
+        this.name = name;
+        this.action = action;
+    }
+
+    public static JobData fromJob(String id, Job job) {
+        return new JobData(id, job.name, job.action);
     }
 }
