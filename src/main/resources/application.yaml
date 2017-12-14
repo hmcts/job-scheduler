@@ -13,6 +13,7 @@ idam:
     url: ${S2S_URL}
     totp_secret: ${TOTP_SECRET}
     microservice: jobscheduler
+    tokenTimeToLiveInSeconds: 14400
 
 spring:
   datasource:
