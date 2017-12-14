@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -20,7 +21,6 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,17 +51,22 @@ public class GetAllJobTest {
 
     @Test
     public void should_return_a_list_of_1_job() throws SchedulerException {
-        HttpAction action = validJob().action;
         JobKey jobKey = new JobKey("name", "group");
-        JobDetail jobDetail = mock(JobDetail.class);
-        JobDataMap jobDataMap = mock(JobDataMap.class);
+
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(HttpCallJob.PARAMS_KEY, "value");
+
+        JobDetail jobDetail = JobBuilder
+            .newJob(HttpCallJob.class)
+            .withIdentity(jobKey)
+            .withDescription("description")
+            .usingJobData(jobDataMap)
+            .build();
+
+        HttpAction action = validJob().action;
 
         when(scheduler.getJobKeys(any())).thenReturn(Collections.singleton(jobKey));
         when(scheduler.getJobDetail(jobKey)).thenReturn(jobDetail);
-        when(jobDetail.getDescription()).thenReturn("description");
-        when(jobDetail.getJobDataMap()).thenReturn(jobDataMap);
-        when(jobDetail.getKey()).thenReturn(jobKey);
-        when(jobDataMap.getString(HttpCallJob.PARAMS_KEY)).thenReturn("value");
         when(actionSerializer.deserialize("value")).thenReturn(action);
 
         JobList jobs = jobsService.getAll("service");
