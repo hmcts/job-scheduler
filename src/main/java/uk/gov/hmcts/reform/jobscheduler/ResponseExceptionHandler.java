@@ -19,7 +19,7 @@ import static org.springframework.http.ResponseEntity.status;
 public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
     @InitBinder
-    private void activateDirectFieldAccess(DataBinder dataBinder) {
+    protected void activateDirectFieldAccess(DataBinder dataBinder) {
         dataBinder.initDirectFieldAccess();
     }
 
