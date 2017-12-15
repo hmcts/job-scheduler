@@ -28,7 +28,7 @@ public class ServiceTokenGeneratorConfiguration {
     @Bean
     public AuthTokenGenerator cachedServiceAuthTokenGenerator(
         @Qualifier("serviceAuthTokenGenerator") final AuthTokenGenerator serviceAuthTokenGenerator,
-        @Value("${idam.s2s-auth.tokenTimeToLiveInSeconds:14400}") final int ttl) {
+        @Value("${idam.s2s-auth.tokenTimeToLiveInSeconds}") final int ttl) {
         return new CachedServiceAuthTokenGenerator(serviceAuthTokenGenerator, ttl);
     }
 }
