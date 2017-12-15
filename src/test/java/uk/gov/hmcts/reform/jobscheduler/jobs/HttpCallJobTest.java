@@ -42,7 +42,7 @@ public class HttpCallJobTest {
     @Mock private AuthTokenGenerator authTokenGenerator;
 
     @Test
-    public void execute_should_send_http_request_specified_in_job_details() {
+    public void should_send_http_request_specified_in_job_details() {
 
         // given
         stubFor(
