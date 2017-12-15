@@ -38,9 +38,8 @@ public class HttpCallJob implements Job {
         String jobId = context.getJobDetail().getKey().getName();
         logger.info("Executing job " + jobId);
 
-        HttpAction action = actionExtractor.extract(context);
-
-        action.headers.put("ServiceAuthorization", tokenGenerator.generate());
+        HttpAction action = actionExtractor.extract(context)
+            .withHeader("ServiceAuthorization", tokenGenerator.generate());
 
         ResponseEntity<String> response =
             restTemplate

@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.http.HttpMethod;
 
+import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 
@@ -31,5 +32,11 @@ public class HttpAction {
         this.method = method;
         this.headers = headers;
         this.body = body;
+    }
+
+    public HttpAction withHeader(String name, String value) {
+        Map<String, String> newHeaders = new HashMap<>(headers);
+        newHeaders.put(name, value);
+        return new HttpAction(this.url, this.method, newHeaders, this.body);
     }
 }
