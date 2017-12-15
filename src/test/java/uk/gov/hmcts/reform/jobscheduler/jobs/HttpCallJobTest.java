@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.jobscheduler.config.ApplicationConfiguration;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -61,8 +60,7 @@ public class HttpCallJobTest {
     @Test
     public void execute_calls_given_endpoint_url() {
         //given
-        Map<String, String> headers = Collections.emptyMap();
-        actionHadHeadersSetTo(headers);
+        actionHadHeadersSetTo(Collections.emptyMap());
 
         // when
         executingHttpCallJob();
@@ -74,8 +72,7 @@ public class HttpCallJobTest {
     @Test
     public void execute_calls_endpoint_with_given_body() {
         //given
-        Map<String, String> headers = Collections.emptyMap();
-        actionHadHeadersSetTo(headers);
+        actionHadHeadersSetTo(Collections.emptyMap());
 
         // when
         executingHttpCallJob();
@@ -90,8 +87,7 @@ public class HttpCallJobTest {
     @Test
     public void execute_adds_service_authorization_header() {
         // given
-        Map<String, String> headers = Collections.emptyMap();
-        actionHadHeadersSetTo(headers);
+        actionHadHeadersSetTo(Collections.emptyMap());
 
         // when
         executingHttpCallJob();
@@ -106,10 +102,7 @@ public class HttpCallJobTest {
     @Test
     public void execute_replaces_existing_service_authorization_header() {
         // given
-        Map<String, String> headers = new HashMap<>();
-        headers.put("ServiceAuthorization", "some-token");
-
-        actionHadHeadersSetTo(headers);
+        actionHadHeadersSetTo(ImmutableMap.of("ServiceAuthorization", "some-token"));
 
         // when
         executingHttpCallJob();
@@ -125,10 +118,7 @@ public class HttpCallJobTest {
     @Test
     public void execute_preserves_non_service_authorization_headers() {
         // given
-        Map<String, String> headers = new HashMap<>();
-        headers.put("X-Custom-Header", "anything");
-
-        actionHadHeadersSetTo(headers);
+        actionHadHeadersSetTo(ImmutableMap.of("X-Custom-Header", "anything"));
 
         // when
         executingHttpCallJob();
@@ -145,7 +135,7 @@ public class HttpCallJobTest {
             .willReturn(new HttpAction(
                 "http://localhost:8080/hello-world",
                 HttpMethod.POST,
-                ImmutableMap.copyOf(headers),
+                headers,
                 "some-body"
             ));
     }
