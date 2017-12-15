@@ -34,6 +34,14 @@ import static org.quartz.JobBuilder.newJob;
 @ContextConfiguration(classes = ApplicationConfiguration.class)
 public class HttpCallJobTest {
 
+    private static final String TEST_PATH = "/hello-world";
+    private static final String TEST_BODY = "some-body";
+    private static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
+    private static final String X_CUSTOM_HEADER = "X-Custom-Header";
+    private static final String NEW_S2S_TOKEN = "newly-generated-token";
+    private static final String OLD_S2S_TOKEN = "some-token";
+    private static final String CUSTOM_VALUE = "anything";
+
     @Rule
     public WireMockRule wireMockRule = new WireMockRule();
 
@@ -46,31 +54,31 @@ public class HttpCallJobTest {
     @Before
     public void setup() {
         stubFor(
-            post(urlEqualTo("/hello-world"))
+            post(urlEqualTo(TEST_PATH))
                 .willReturn(aResponse().withStatus(200))
         );
 
         given(context.getJobDetail())
             .willReturn(newJob(HttpCallJob.class).withIdentity("id", "group").build());
 
-        given(authTokenGenerator.generate()).willReturn("newly-generated-token");
+        given(authTokenGenerator.generate()).willReturn(NEW_S2S_TOKEN);
     }
 
     @Test
     public void execute_calls_given_endpoint_url() {
-        //given
+        // given
         actionHadHeadersSetTo(Collections.emptyMap());
 
         // when
         executingHttpCallJob();
 
         // then
-        verify(postRequestedFor(urlEqualTo("/hello-world")));
+        verify(postRequestedFor(urlEqualTo(TEST_PATH)));
     }
 
     @Test
     public void execute_calls_endpoint_with_given_body() {
-        //given
+        // given
         actionHadHeadersSetTo(Collections.emptyMap());
 
         // when
@@ -78,8 +86,8 @@ public class HttpCallJobTest {
 
         // then
         verify(
-            postRequestedFor(urlEqualTo("/hello-world"))
-                .withRequestBody(equalTo("some-body"))
+            postRequestedFor(urlEqualTo(TEST_PATH))
+                .withRequestBody(equalTo(TEST_BODY))
         );
     }
 
@@ -93,49 +101,48 @@ public class HttpCallJobTest {
 
         // then
         verify(
-            postRequestedFor(urlEqualTo("/hello-world"))
-                .withHeader("ServiceAuthorization", equalTo("newly-generated-token"))
+            postRequestedFor(urlEqualTo(TEST_PATH))
+                .withHeader(SERVICE_AUTHORIZATION_HEADER, equalTo(NEW_S2S_TOKEN))
         );
     }
 
     @Test
     public void execute_replaces_existing_service_authorization_header() {
         // given
-        actionHadHeadersSetTo(ImmutableMap.of("ServiceAuthorization", "some-token"));
+        actionHadHeadersSetTo(ImmutableMap.of(SERVICE_AUTHORIZATION_HEADER, OLD_S2S_TOKEN));
 
         // when
         executingHttpCallJob();
 
         // then
         verify(
-            postRequestedFor(urlEqualTo("/hello-world"))
-                .withHeader("ServiceAuthorization", equalTo("newly-generated-token"))
-                .withRequestBody(equalTo("some-body"))
+            postRequestedFor(urlEqualTo(TEST_PATH))
+                .withHeader(SERVICE_AUTHORIZATION_HEADER, equalTo(NEW_S2S_TOKEN))
         );
     }
 
     @Test
     public void execute_preserves_non_service_authorization_headers() {
         // given
-        actionHadHeadersSetTo(ImmutableMap.of("X-Custom-Header", "anything"));
+        actionHadHeadersSetTo(ImmutableMap.of(X_CUSTOM_HEADER, CUSTOM_VALUE));
 
         // when
         executingHttpCallJob();
 
         // then
         verify(
-            postRequestedFor(urlEqualTo("/hello-world"))
-                .withHeader("X-Custom-Header", equalTo("anything"))
+            postRequestedFor(urlEqualTo(TEST_PATH))
+                .withHeader(X_CUSTOM_HEADER, equalTo(CUSTOM_VALUE))
         );
     }
 
     private void actionHadHeadersSetTo(Map<String, String> headers) {
         given(actionExtractor.extract(context))
             .willReturn(new HttpAction(
-                "http://localhost:8080/hello-world",
+                "http://localhost:8080" + TEST_PATH,
                 HttpMethod.POST,
                 headers,
-                "some-body"
+                TEST_BODY
             ));
     }
 
