@@ -54,6 +54,7 @@ public class HttpCallJobTest {
             .willReturn(newJob(HttpCallJob.class).withIdentity("id", "group").build());
 
         Map<String, String> headers = new HashMap<>();
+        headers.put("X-Custom-Header", "anything");
         headers.put("ServiceAuthorization", "some-token");
 
         given(actionExtractor.extract(context))
@@ -71,6 +72,7 @@ public class HttpCallJobTest {
         // then
         verify(
             postRequestedFor(urlEqualTo("/hello-world"))
+                .withHeader("X-Custom-Header", equalTo("anything"))
                 .withHeader("ServiceAuthorization", equalTo("newly-generated-token"))
                 .withRequestBody(equalTo("some-body"))
         );
