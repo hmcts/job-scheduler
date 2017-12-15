@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.jobscheduler.jobs;
 import com.google.common.collect.ImmutableMap;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.jobscheduler.config.ApplicationConfiguration;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,10 +45,8 @@ public class HttpCallJobTest {
     @Mock private JobExecutionContext context;
     @Mock private AuthTokenGenerator authTokenGenerator;
 
-    @Test
-    public void should_send_http_request_specified_in_job_details() {
-
-        // given
+    @Before
+    public void setup() {
         stubFor(
             post(urlEqualTo("/hello-world"))
                 .willReturn(aResponse().withStatus(200))
@@ -55,10 +55,92 @@ public class HttpCallJobTest {
         given(context.getJobDetail())
             .willReturn(newJob(HttpCallJob.class).withIdentity("id", "group").build());
 
+        given(authTokenGenerator.generate()).willReturn("newly-generated-token");
+    }
+
+    @Test
+    public void execute_calls_given_endpoint_url() {
+        //given
+        Map<String, String> headers = Collections.emptyMap();
+        actionHadHeadersSetTo(headers);
+
+        // when
+        executingHttpCallJob();
+
+        // then
+        verify(postRequestedFor(urlEqualTo("/hello-world")));
+    }
+
+    @Test
+    public void execute_calls_endpoint_with_given_body() {
+        //given
+        Map<String, String> headers = Collections.emptyMap();
+        actionHadHeadersSetTo(headers);
+
+        // when
+        executingHttpCallJob();
+
+        // then
+        verify(
+            postRequestedFor(urlEqualTo("/hello-world"))
+                .withRequestBody(equalTo("some-body"))
+        );
+    }
+
+    @Test
+    public void execute_adds_service_authorization_header() {
+        // given
+        Map<String, String> headers = Collections.emptyMap();
+        actionHadHeadersSetTo(headers);
+
+        // when
+        executingHttpCallJob();
+
+        // then
+        verify(
+            postRequestedFor(urlEqualTo("/hello-world"))
+                .withHeader("ServiceAuthorization", equalTo("newly-generated-token"))
+        );
+    }
+
+    @Test
+    public void execute_replaced_existing_service_authorization_header() {
+        // given
         Map<String, String> headers = new HashMap<>();
-        headers.put("X-Custom-Header", "anything");
         headers.put("ServiceAuthorization", "some-token");
 
+        actionHadHeadersSetTo(headers);
+
+        // when
+        executingHttpCallJob();
+
+        // then
+        verify(
+            postRequestedFor(urlEqualTo("/hello-world"))
+                .withHeader("ServiceAuthorization", equalTo("newly-generated-token"))
+                .withRequestBody(equalTo("some-body"))
+        );
+    }
+
+    @Test
+    public void execute_preserves_non_service_authorization_headers() {
+        // given
+        Map<String, String> headers = new HashMap<>();
+        headers.put("X-Custom-Header", "anything");
+
+        actionHadHeadersSetTo(headers);
+
+        // when
+        executingHttpCallJob();
+
+        // then
+        verify(
+            postRequestedFor(urlEqualTo("/hello-world"))
+                .withHeader("X-Custom-Header", equalTo("anything"))
+        );
+    }
+
+    private void actionHadHeadersSetTo(Map<String, String> headers) {
         given(actionExtractor.extract(context))
             .willReturn(new HttpAction(
                 "http://localhost:8080/hello-world",
@@ -66,17 +148,9 @@ public class HttpCallJobTest {
                 ImmutableMap.copyOf(headers),
                 "some-body"
             ));
+    }
 
-        given(authTokenGenerator.generate()).willReturn("newly-generated-token");
-        // when
+    private void executingHttpCallJob() {
         new HttpCallJob(restTemplate, actionExtractor, authTokenGenerator).execute(context);
-
-        // then
-        verify(
-            postRequestedFor(urlEqualTo("/hello-world"))
-                .withHeader("X-Custom-Header", equalTo("anything"))
-                .withHeader("ServiceAuthorization", equalTo("newly-generated-token"))
-                .withRequestBody(equalTo("some-body"))
-        );
     }
 }
