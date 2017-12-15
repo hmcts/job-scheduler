@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.jobscheduler.jobs;
 
-import com.google.common.collect.ImmutableMap;
-
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
