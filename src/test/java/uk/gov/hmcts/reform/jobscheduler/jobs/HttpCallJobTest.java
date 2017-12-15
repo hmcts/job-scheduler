@@ -104,7 +104,7 @@ public class HttpCallJobTest {
     }
 
     @Test
-    public void execute_replaced_existing_service_authorization_header() {
+    public void execute_replaces_existing_service_authorization_header() {
         // given
         Map<String, String> headers = new HashMap<>();
         headers.put("ServiceAuthorization", "some-token");
