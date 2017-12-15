@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.jobscheduler.jobs;
 
+import com.google.common.collect.ImmutableMap;
+
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,7 +63,7 @@ public class HttpCallJobTest {
             .willReturn(new HttpAction(
                 "http://localhost:8080/hello-world",
                 HttpMethod.POST,
-                headers,
+                ImmutableMap.copyOf(headers),
                 "some-body"
             ));
 
