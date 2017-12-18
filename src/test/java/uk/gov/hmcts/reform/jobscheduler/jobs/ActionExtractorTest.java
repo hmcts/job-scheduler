@@ -8,6 +8,7 @@ import org.quartz.JobExecutionContext;
 import org.springframework.http.HttpMethod;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.ActionSerializer;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobDataKeys;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -36,7 +37,7 @@ public class ActionExtractorTest {
             .willReturn(
                 newJob(HttpCallJob.class)
                     .withIdentity("irrelevant job id", "irrelevant job group")
-                    .usingJobData(HttpCallJob.PARAMS_KEY, serializer.serialize(scheduledAction))
+                    .usingJobData(JobDataKeys.PARAMS, serializer.serialize(scheduledAction))
                     .requestRecovery()
                     .build()
             );
