@@ -53,3 +53,7 @@ quartzProperties:
     threadPool:
       class: org.quartz.simpl.SimpleThreadPool
       threadCount: 8
+
+retryPolicy:
+  maxNumberOfJobExecutions: ${MAX_NUMBER_OF_JOB_EXECUTIONS:5}
+  delayBetweenAttemptsInMs: ${DELAY_BETWEEN_JOB_ATTEMPTS_MS:15000}
