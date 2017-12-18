@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.reform.jobscheduler.controllers.JobsController;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
 import uk.gov.hmcts.reform.jobscheduler.model.PageRequest;
 import uk.gov.hmcts.reform.jobscheduler.model.Pages;
@@ -46,7 +47,7 @@ public class GetAllTest {
         Arrays.asList(
             "/jobs",
             "/jobs?page=1",
-            "/jobs?size",
+            "/jobs?size=1",
             "/jobs?page=1&size=1"
         ).forEach(url -> {
             try {
@@ -102,6 +103,29 @@ public class GetAllTest {
         given(authService.authenticate(anyString())).willThrow(new AuthException(null, null));
 
         sendGet().andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void should_return_400_when_request_parameters_are_out_of_bounds() throws Exception {
+        sendGet("/jobs?page=-1")
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("error").value("must be greater than or equal to 0"));
+
+        int minSize = JobsController.MIN_PAGE_SIZE - 1;
+
+        sendGet("/jobs?size=" + minSize)
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("error")
+                .value("must be greater than or equal to " + JobsController.MIN_PAGE_SIZE)
+            );
+
+        int maxSize = JobsController.MAX_PAGE_SIZE + 1;
+
+        sendGet("/jobs?size=" + maxSize)
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("error")
+                .value("must be less than or equal to " + JobsController.MAX_PAGE_SIZE)
+            );
     }
 
     private ResultActions sendGet(String url) throws Exception {

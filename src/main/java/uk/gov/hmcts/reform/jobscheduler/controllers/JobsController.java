@@ -23,6 +23,8 @@ import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 import java.net.URI;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
@@ -32,6 +34,9 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
 @Validated
 @RequestMapping(path = "/jobs")
 public class JobsController {
+
+    public static final int MIN_PAGE_SIZE = 1;
+    public static final int MAX_PAGE_SIZE = 100;
 
     private final JobsService jobsService;
     private final AuthService authService;
@@ -72,10 +77,15 @@ public class JobsController {
     @ApiResponses({
         @ApiResponse(code = 200, message = "Success")
     })
-    public Page<JobData> getAll(
-        @RequestHeader("ServiceAuthorization") String serviceAuthHeader,
-        @RequestParam(value = "page", defaultValue = "0") int page,
-        @RequestParam(value = "size", defaultValue = "10") int size
+    public Page<JobData> getAll(@RequestHeader("ServiceAuthorization")
+                                    String serviceAuthHeader,
+                                @Min(0)
+                                @RequestParam(value = "page", defaultValue = "0")
+                                    int page,
+                                @Min(MIN_PAGE_SIZE)
+                                @Max(MAX_PAGE_SIZE)
+                                @RequestParam(value = "size", defaultValue = "10")
+                                    int size
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
 
