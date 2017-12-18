@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
 import uk.gov.hmcts.reform.jobscheduler.model.PageRequest;
 import uk.gov.hmcts.reform.jobscheduler.model.Pages;
@@ -41,11 +40,6 @@ public class GetAllTest {
 
     @Test
     public void should_return_no_data_when_empty_job_list_is_returned() {
-        ResultMatcher contentIsArray = jsonPath("content").isArray();
-        ResultMatcher contentIsEmpty = jsonPath("content").isEmpty();
-        ResultMatcher pageIsLast = jsonPath("last").value(true);
-        ResultMatcher pageIsFirst = jsonPath("first").value(true);
-
         when(jobsService.getAll(anyString(), anyInt(), anyInt()))
             .thenReturn(new Pages<>(Collections.emptyList()));
 
@@ -58,10 +52,10 @@ public class GetAllTest {
             try {
                 sendGet(url)
                     .andExpect(status().isOk())
-                    .andExpect(contentIsArray)
-                    .andExpect(contentIsEmpty)
-                    .andExpect(pageIsLast)
-                    .andExpect(pageIsFirst);
+                    .andExpect(jsonPath("content").isArray())
+                    .andExpect(jsonPath("content").isEmpty())
+                    .andExpect(jsonPath("last").value(true))
+                    .andExpect(jsonPath("first").value(true));
             } catch (Exception exc) {
                 fail("Failed to test '" + url + "'", exc);
             }
