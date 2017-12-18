@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -14,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
+import uk.gov.hmcts.reform.jobscheduler.model.Pages;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthException;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
@@ -47,7 +47,7 @@ public class GetAllTest {
         ResultMatcher pageIsFirst = jsonPath("first").value(true);
 
         when(jobsService.getAll(anyString(), anyInt(), anyInt()))
-            .thenReturn(new PageImpl<>(Collections.emptyList()));
+            .thenReturn(new Pages<>(Collections.emptyList()));
 
         Arrays.asList(
             "/jobs",
@@ -72,16 +72,16 @@ public class GetAllTest {
     public void should_return_default_pages_when_no_parameters_are_passed() throws Exception {
         JobData jobData = JobData.fromJob("some-id", validJob());
         when(jobsService.getAll(anyString(), anyInt(), anyInt()))
-            .thenReturn(new PageImpl<>(Collections.singletonList(jobData)));
+            .thenReturn(new Pages<>(Collections.singletonList(jobData)));
 
         sendGet()
             .andExpect(status().isOk())
             .andExpect(jsonPath("content[0].action").exists())
             .andExpect(jsonPath("content[0].id").value(jobData.id))
             .andExpect(jsonPath("content[0].name").value(jobData.name))
-            .andExpect(jsonPath("totalPages").value(1))
-            .andExpect(jsonPath("totalElements").value(1))
-            .andExpect(jsonPath("numberOfElements").value(1));
+            .andExpect(jsonPath("total_pages").value(1))
+            .andExpect(jsonPath("total_elements").value(1))
+            .andExpect(jsonPath("number_of_elements").value(1));
     }
 
     @Test
@@ -90,17 +90,17 @@ public class GetAllTest {
 
         getResponse(1, 10)
             .andExpect(jsonPath("content").isEmpty())
-            .andExpect(jsonPath("totalPages").value(1))
-            .andExpect(jsonPath("numberOfElements").value(0));
+            .andExpect(jsonPath("total_pages").value(1))
+            .andExpect(jsonPath("number_of_elements").value(0));
         getResponse(0, 2)
-            .andExpect(jsonPath("totalPages").value(2))
-            .andExpect(jsonPath("numberOfElements").value(2));
+            .andExpect(jsonPath("total_pages").value(2))
+            .andExpect(jsonPath("number_of_elements").value(2));
         getResponse(1, 2)
-            .andExpect(jsonPath("totalPages").value(2))
-            .andExpect(jsonPath("numberOfElements").value(1));
+            .andExpect(jsonPath("total_pages").value(2))
+            .andExpect(jsonPath("number_of_elements").value(1));
         getResponse(1, 1)
-            .andExpect(jsonPath("totalPages").value(3))
-            .andExpect(jsonPath("numberOfElements").value(1));
+            .andExpect(jsonPath("total_pages").value(3))
+            .andExpect(jsonPath("number_of_elements").value(1));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class GetAllTest {
             jobs = Collections.nCopies(Math.min(copies, size), JobData.fromJob("some-id", validJob()));
         }
 
-        Page<JobData> pages = new PageImpl<>(jobs, PageRequest.of(page, size), total);
+        Page<JobData> pages = new Pages<>(jobs, PageRequest.of(page, size), total);
         when(jobsService.getAll(anyString(), anyInt(), anyInt())).thenReturn(pages);
 
         return sendGet("/jobs?page=" + page + "&size=" + size);

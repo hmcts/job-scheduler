@@ -6,12 +6,12 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
+import uk.gov.hmcts.reform.jobscheduler.model.Pages;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
 
@@ -90,7 +90,7 @@ public class JobsService {
             ))
             .collect(Collectors.toList());
 
-        return new PageImpl<>(jobs, PageRequest.of(page, size), total);
+        return new Pages<>(jobs, PageRequest.of(page, size), total);
     }
 
     private Job getJobFromDetail(JobDetail jobDetail) {
