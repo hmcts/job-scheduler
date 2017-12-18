@@ -7,10 +7,10 @@ public class FieldError {
     @JsonProperty("field_name")
     public final String fieldName;
 
-    public final String value;
+    public final String message;
 
-    public FieldError(String fieldName, String value) {
+    public FieldError(String fieldName, String message) {
         this.fieldName = fieldName;
-        this.value = value;
+        this.message = message;
     }
 }
