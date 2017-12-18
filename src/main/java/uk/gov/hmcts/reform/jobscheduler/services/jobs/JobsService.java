@@ -22,6 +22,7 @@ import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static uk.gov.hmcts.reform.jobscheduler.services.jobs.GetterFromScheduler.getFromScheduler;
 
+
 @Service
 public class JobsService {
 
@@ -41,7 +42,8 @@ public class JobsService {
                 newJob(HttpCallJob.class)
                     .withIdentity(id, serviceName)
                     .withDescription(job.name)
-                    .usingJobData(HttpCallJob.PARAMS_KEY, serializer.serialize(job.action))
+                    .usingJobData(JobDataKeys.PARAMS, serializer.serialize(job.action))
+                    .usingJobData(JobDataKeys.ATTEMPT, 1)
                     .requestRecovery()
                     .build(),
                 newTrigger()
@@ -86,7 +88,7 @@ public class JobsService {
     private Job getJobFromDetail(JobDetail jobDetail) {
         return new Job(
             jobDetail.getDescription(),
-            serializer.deserialize(jobDetail.getJobDataMap().getString(HttpCallJob.PARAMS_KEY)),
+            serializer.deserialize(jobDetail.getJobDataMap().getString(JobDataKeys.PARAMS)),
             null
         );
     }

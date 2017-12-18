@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 import uk.gov.hmcts.reform.jobscheduler.model.JobList;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.ActionSerializer;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobDataKeys;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
 import java.util.Collections;
@@ -54,7 +55,7 @@ public class GetAllJobTest {
         JobKey jobKey = new JobKey("name", "group");
 
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(HttpCallJob.PARAMS_KEY, "value");
+        jobDataMap.put(JobDataKeys.PARAMS, "value");
 
         JobDetail jobDetail = JobBuilder
             .newJob(HttpCallJob.class)
