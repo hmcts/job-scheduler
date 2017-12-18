@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 
 @Component
@@ -19,10 +20,16 @@ public class HttpCallJob implements Job {
 
     private final RestTemplate restTemplate;
     private final ActionExtractor actionExtractor;
+    private final AuthTokenGenerator tokenGenerator;
 
-    public HttpCallJob(RestTemplate restTemplate, ActionExtractor actionExtractor) {
+    public HttpCallJob(
+        RestTemplate restTemplate,
+        ActionExtractor actionExtractor,
+        AuthTokenGenerator tokenGenerator
+    ) {
         this.restTemplate = restTemplate;
         this.actionExtractor = actionExtractor;
+        this.tokenGenerator = tokenGenerator;
     }
 
     @Override
@@ -30,7 +37,8 @@ public class HttpCallJob implements Job {
         String jobId = context.getJobDetail().getKey().getName();
         logger.info("Executing job " + jobId);
 
-        HttpAction action = actionExtractor.extract(context);
+        HttpAction action = actionExtractor.extract(context)
+            .withHeader("ServiceAuthorization", tokenGenerator.generate());
 
         ResponseEntity<String> response =
             restTemplate
