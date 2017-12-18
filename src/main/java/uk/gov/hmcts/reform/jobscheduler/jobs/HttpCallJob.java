@@ -4,7 +4,6 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,7 @@ public class HttpCallJob implements Job {
     public HttpCallJob(
         RestTemplate restTemplate,
         ActionExtractor actionExtractor,
-        @Qualifier("cachedServiceAuthTokenGenerator") AuthTokenGenerator tokenGenerator
+        AuthTokenGenerator tokenGenerator
     ) {
         this.restTemplate = restTemplate;
         this.actionExtractor = actionExtractor;
