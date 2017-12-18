@@ -8,10 +8,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.jobscheduler.config.ApplicationConfiguration;
@@ -21,13 +25,18 @@ import java.util.Collections;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.quartz.JobBuilder.newJob;
 
 @RunWith(SpringRunner.class)
@@ -41,6 +50,7 @@ public class HttpCallJobTest {
     private static final String NEW_S2S_TOKEN = "newly-generated-token";
     private static final String OLD_S2S_TOKEN = "some-token";
     private static final String CUSTOM_VALUE = "anything";
+    private static final String JOB_ID = "jobId123";
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule();
@@ -59,13 +69,14 @@ public class HttpCallJobTest {
         );
 
         given(context.getJobDetail())
-            .willReturn(newJob(HttpCallJob.class).withIdentity("id", "group").build());
+            .willReturn(newJob(HttpCallJob.class).withIdentity(JOB_ID, "group").build());
 
         given(authTokenGenerator.generate()).willReturn(NEW_S2S_TOKEN);
+        given(actionExtractor.extract(any())).willReturn(createSampleAction());
     }
 
     @Test
-    public void execute_calls_given_endpoint_url() {
+    public void execute_calls_given_endpoint_url() throws Exception {
         // given
         actionHadHeadersSetTo(Collections.emptyMap());
 
@@ -77,7 +88,7 @@ public class HttpCallJobTest {
     }
 
     @Test
-    public void execute_calls_endpoint_with_given_body() {
+    public void execute_calls_endpoint_with_given_body() throws Exception {
         // given
         actionHadHeadersSetTo(Collections.emptyMap());
 
@@ -92,7 +103,7 @@ public class HttpCallJobTest {
     }
 
     @Test
-    public void execute_adds_service_authorization_header() {
+    public void execute_adds_service_authorization_header() throws Exception {
         // given
         actionHadHeadersSetTo(Collections.emptyMap());
 
@@ -107,7 +118,7 @@ public class HttpCallJobTest {
     }
 
     @Test
-    public void execute_replaces_existing_service_authorization_header() {
+    public void execute_replaces_existing_service_authorization_header() throws Exception {
         // given
         actionHadHeadersSetTo(ImmutableMap.of(SERVICE_AUTHORIZATION_HEADER, OLD_S2S_TOKEN));
 
@@ -122,7 +133,7 @@ public class HttpCallJobTest {
     }
 
     @Test
-    public void execute_preserves_non_service_authorization_headers() {
+    public void execute_preserves_non_service_authorization_headers() throws Exception {
         // given
         actionHadHeadersSetTo(ImmutableMap.of(X_CUSTOM_HEADER, CUSTOM_VALUE));
 
@@ -136,17 +147,77 @@ public class HttpCallJobTest {
         );
     }
 
-    private void actionHadHeadersSetTo(Map<String, String> headers) {
-        given(actionExtractor.extract(context))
-            .willReturn(new HttpAction(
-                "http://localhost:8080" + TEST_PATH,
-                HttpMethod.POST,
-                headers,
-                TEST_BODY
-            ));
+    @Test
+    public void execute_should_fail_for_client_error_response() {
+        assertExecuteFailsForResponseStatus(401);
     }
 
-    private void executingHttpCallJob() {
+    @Test
+    public void execute_should_fail_for_server_error_response() {
+        assertExecuteFailsForResponseStatus(503);
+    }
+
+    @Test
+    public void execute_should_fail_when_rest_client_fails() {
+        RestTemplate mockRestTemplate = mock(RestTemplate.class);
+
+        given(
+            mockRestTemplate.exchange(
+                anyString(),
+                any(HttpMethod.class),
+                any(HttpEntity.class),
+                any(Class.class)
+            )
+        ).willThrow(new RestClientException("test exception"));
+
+        actionHadHeadersSetTo(ImmutableMap.of("header", "value"));
+
+        HttpCallJob job = new HttpCallJob(mockRestTemplate, actionExtractor, authTokenGenerator);
+
+        assertThatThrownBy(
+            () -> job.execute(context)
+        ).isInstanceOf(
+            JobExecutionException.class
+        ).hasMessage(
+            String.format("Job failed. Job ID: %s", JOB_ID)
+        ).hasCauseInstanceOf(RestClientException.class);
+    }
+
+    private void assertExecuteFailsForResponseStatus(int responseStatus) {
+        stubFor(
+            post(anyUrl()).willReturn(aResponse().withStatus(responseStatus))
+        );
+
+        actionHadHeadersSetTo(ImmutableMap.of("header", "value"));
+
+        assertThatThrownBy(
+            () -> executingHttpCallJob()
+        ).isInstanceOf(
+            JobExecutionException.class
+        ).hasMessage(
+            String.format("Job failed. Job ID: %s", JOB_ID)
+        ).hasCauseInstanceOf(HttpStatusCodeException.class);
+    }
+
+    private void actionHadHeadersSetTo(Map<String, String> headers) {
+        given(actionExtractor.extract(context))
+            .willReturn(createSampleAction(headers));
+    }
+
+    private HttpAction createSampleAction() {
+        return createSampleAction(ImmutableMap.of("sample-header", "value"));
+    }
+
+    private HttpAction createSampleAction(Map<String, String> headers) {
+        return new HttpAction(
+            "http://localhost:8080" + TEST_PATH,
+            HttpMethod.POST,
+            headers,
+            TEST_BODY
+        );
+    }
+
+    private void executingHttpCallJob() throws JobExecutionException {
         new HttpCallJob(restTemplate, actionExtractor, authTokenGenerator).execute(context);
     }
 }

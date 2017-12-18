@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.jobscheduler.jobs;
 
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.PersistJobDataAfterExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -13,9 +16,10 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 
 @Component
+@PersistJobDataAfterExecution
+@DisallowConcurrentExecution
 public class HttpCallJob implements Job {
 
-    public static final String PARAMS_KEY = "params";
     private static final Logger logger = LoggerFactory.getLogger(HttpCallJob.class);
 
     private final RestTemplate restTemplate;
@@ -33,23 +37,30 @@ public class HttpCallJob implements Job {
     }
 
     @Override
-    public void execute(JobExecutionContext context) {
+    public void execute(JobExecutionContext context) throws JobExecutionException {
         String jobId = context.getJobDetail().getKey().getName();
-        logger.info("Executing job " + jobId);
 
-        HttpAction action = actionExtractor.extract(context)
-            .withHeader("ServiceAuthorization", tokenGenerator.generate());
+        try {
+            logger.info("Executing job " + jobId);
 
-        ResponseEntity<String> response =
-            restTemplate
-                .exchange(
-                    action.url,
-                    action.method,
-                    toHttpEntity(action),
-                    String.class
-                );
+            HttpAction action = actionExtractor.extract(context)
+                .withHeader("ServiceAuthorization", tokenGenerator.generate());
 
-        logger.info("Job {} executed. Response code: {}", jobId, response.getStatusCodeValue());
+            ResponseEntity<String> response =
+                restTemplate
+                    .exchange(
+                        action.url,
+                        action.method,
+                        toHttpEntity(action),
+                        String.class
+                    );
+
+            logger.info("Job {} executed. Response code: {}", jobId, response.getStatusCodeValue());
+        } catch (Exception e) {
+            String errorMessage = String.format("Job failed. Job ID: %s", jobId);
+            logger.error(errorMessage, e);
+            throw new JobExecutionException(errorMessage, e);
+        }
     }
 
     private static HttpEntity toHttpEntity(HttpAction action) {
