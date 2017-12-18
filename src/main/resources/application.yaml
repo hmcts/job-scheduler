@@ -11,7 +11,7 @@ s2s:
 idam:
   s2s-auth:
     url: ${S2S_URL}
-    totp_secret: ${S2S_SECRET}
+    secret: ${S2S_SECRET}
     microservice: ${S2S_NAME:jobscheduler}
     tokenTimeToLiveInSeconds: ${S2S_TTL:14400}
 
