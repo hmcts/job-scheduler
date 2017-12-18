@@ -18,9 +18,11 @@ import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthException;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -38,7 +40,7 @@ public class GetAllTest {
     @MockBean private AuthService authService;
 
     @Test
-    public void should_return_no_data_when_empty_job_list_is_returned() throws Exception {
+    public void should_return_no_data_when_empty_job_list_is_returned() {
         ResultMatcher contentIsArray = jsonPath("content").isArray();
         ResultMatcher contentIsEmpty = jsonPath("content").isEmpty();
         ResultMatcher pageIsLast = jsonPath("last").value(true);
@@ -47,30 +49,23 @@ public class GetAllTest {
         when(jobsService.getAll(anyString(), anyInt(), anyInt()))
             .thenReturn(new PageImpl<>(Collections.emptyList()));
 
-        sendGet()
-            .andExpect(status().isOk())
-            .andExpect(contentIsArray)
-            .andExpect(contentIsEmpty)
-            .andExpect(pageIsLast)
-            .andExpect(pageIsFirst);
-        sendGet("/jobs?page=1")
-            .andExpect(status().isOk())
-            .andExpect(contentIsArray)
-            .andExpect(contentIsEmpty)
-            .andExpect(pageIsLast)
-            .andExpect(pageIsFirst);
-        sendGet("/jobs?size=1")
-            .andExpect(status().isOk())
-            .andExpect(contentIsArray)
-            .andExpect(contentIsEmpty)
-            .andExpect(pageIsLast)
-            .andExpect(pageIsFirst);
-        sendGet("/jobs?page=1&size=1")
-            .andExpect(status().isOk())
-            .andExpect(contentIsArray)
-            .andExpect(contentIsEmpty)
-            .andExpect(pageIsLast)
-            .andExpect(pageIsFirst);
+        Arrays.asList(
+            "/jobs",
+            "/jobs?page=1",
+            "/jobs?size",
+            "/jobs?page=1&size=1"
+        ).forEach(url -> {
+            try {
+                sendGet(url)
+                    .andExpect(status().isOk())
+                    .andExpect(contentIsArray)
+                    .andExpect(contentIsEmpty)
+                    .andExpect(pageIsLast)
+                    .andExpect(pageIsFirst);
+            } catch (Exception exc) {
+                fail("Failed to test '" + url + "'", exc);
+            }
+        });
     }
 
     @Test
@@ -91,6 +86,8 @@ public class GetAllTest {
 
     @Test
     public void should_paginate_response_content_correctly_according_to_parameters() throws Exception {
+        // given we have 3 jobs in total
+
         getResponse(1, 10)
             .andExpect(jsonPath("content").isEmpty())
             .andExpect(jsonPath("totalPages").value(1))
