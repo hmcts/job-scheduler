@@ -3,12 +3,15 @@ package uk.gov.hmcts.reform.jobscheduler.config;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.spi.JobFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.FailedJobRescheduler;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -47,9 +50,20 @@ public class QuartzConfiguration {
 
     @Bean
     @Singleton
-    public Scheduler scheduler(SchedulerFactoryBean factory) throws SchedulerException {
+    public Scheduler scheduler(
+        SchedulerFactoryBean factory,
+        @Value("${retryPolicy.maxNumberOfJobExecutions}") int maxJobExecutionAttempts,
+        @Value("${retryPolicy.delayBetweenAttemptsInMs}") long delayBetweenAttemptsInMs
+    ) throws SchedulerException {
+
         Scheduler scheduler = factory.getScheduler();
 
+        FailedJobRescheduler failedJobRescheduler = new FailedJobRescheduler(
+            maxJobExecutionAttempts,
+            Duration.ofMillis(delayBetweenAttemptsInMs)
+        );
+
+        scheduler.getListenerManager().addJobListener(failedJobRescheduler);
         scheduler.start();
 
         return scheduler;

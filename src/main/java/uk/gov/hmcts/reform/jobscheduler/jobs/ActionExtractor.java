@@ -4,8 +4,8 @@ import org.quartz.JobExecutionContext;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.ActionSerializer;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobDataKeys;
 
-import static uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob.PARAMS_KEY;
 
 @Component
 public class ActionExtractor {
@@ -19,7 +19,7 @@ public class ActionExtractor {
      * Extracts action model from job execution context.
      */
     public HttpAction extract(JobExecutionContext ctx) {
-        String json = ctx.getJobDetail().getJobDataMap().getString(PARAMS_KEY);
+        String json = ctx.getJobDetail().getJobDataMap().getString(JobDataKeys.PARAMS);
         return actionSerializer.deserialize(json);
     }
 }
