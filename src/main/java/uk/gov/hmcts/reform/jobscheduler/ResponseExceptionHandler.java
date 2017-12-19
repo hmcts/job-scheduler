@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
-import static java.util.stream.Collectors.toList;
 import static org.springframework.http.ResponseEntity.status;
 
 @ControllerAdvice
@@ -50,7 +49,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
                 .getFieldErrors()
                 .stream()
                 .map(err -> new FieldError(err.getField(), err.getDefaultMessage()))
-                .collect(toList());
+                .collect(Collectors.toList());
 
         return status(HttpStatus.BAD_REQUEST).body(new ModelValidationError(fieldErrors));
     }
