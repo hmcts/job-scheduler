@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.jobscheduler.controllers;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,15 +13,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
-import uk.gov.hmcts.reform.jobscheduler.model.JobList;
+import uk.gov.hmcts.reform.jobscheduler.model.JobData;
 import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
 import java.net.URI;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
@@ -30,6 +34,9 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
 @Validated
 @RequestMapping(path = "/jobs")
 public class JobsController {
+
+    public static final int MIN_PAGE_SIZE = 1;
+    public static final int MAX_PAGE_SIZE = 100;
 
     private final JobsService jobsService;
     private final AuthService authService;
@@ -70,11 +77,18 @@ public class JobsController {
     @ApiResponses({
         @ApiResponse(code = 200, message = "Success")
     })
-    public JobList getAll(
-        @RequestHeader("ServiceAuthorization") String serviceAuthHeader
+    public Page<JobData> getAll(@RequestHeader("ServiceAuthorization")
+                                    String serviceAuthHeader,
+                                @Min(0)
+                                @RequestParam(value = "page", defaultValue = "0")
+                                    int page,
+                                @Min(MIN_PAGE_SIZE)
+                                @Max(MAX_PAGE_SIZE)
+                                @RequestParam(value = "size", defaultValue = "10")
+                                    int size
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
 
-        return jobsService.getAll(serviceName);
+        return jobsService.getAll(serviceName, page, size);
     }
 }

@@ -10,7 +10,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.gov.hmcts.reform.jobscheduler.model.errors.FieldError;
 import uk.gov.hmcts.reform.jobscheduler.model.errors.ModelValidationError;
@@ -20,6 +21,13 @@ import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundExce
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+
 import static org.springframework.http.ResponseEntity.status;
 
 @ControllerAdvice
@@ -49,22 +57,39 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(NotImplementedException.class)
-    protected ResponseEntity handleNotImplemented(NotImplementedException exc, WebRequest req) {
-        return status(HttpStatus.NOT_IMPLEMENTED).build();
+    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    protected void handleNotImplemented() {
+        // empty method
     }
 
     @ExceptionHandler(FeignException.class)
-    protected ResponseEntity handleFeignException(FeignException exc, WebRequest req) {
+    protected ResponseEntity<Object> handleFeignException(FeignException exc) {
         return status(exc.status()).build();
     }
 
     @ExceptionHandler(AuthException.class)
-    protected ResponseEntity handleAuthException(AuthException exc, WebRequest req) {
-        return status(HttpStatus.UNAUTHORIZED).build();
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    protected void handleAuthException() {
+        // empty method
     }
 
     @ExceptionHandler(JobNotFoundException.class)
-    protected ResponseEntity handleNotFoundException(AuthException exc, WebRequest req) {
-        return status(HttpStatus.NOT_FOUND).build();
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected void handleNotFoundException() {
+        // empty method
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected Map<String, List<String>> handleConstraintViolation(ConstraintViolationException violation) {
+        return Collections.singletonMap(
+            "error",
+            violation
+                .getConstraintViolations()
+                .stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.toList())
+        );
     }
 }

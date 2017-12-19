@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.jobscheduler.services.jobs;
 import org.quartz.SchedulerException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 
-class GetterFromScheduler {
+public class GetterFromScheduler {
 
     @FunctionalInterface
-    interface Getter<T, R> {
+    public interface Getter<T, R> {
         R apply(T t) throws SchedulerException;
     }
 
@@ -21,7 +21,7 @@ class GetterFromScheduler {
         }
     }
 
-    static <T, R> R getFromScheduler(Getter<T, R> getter, T arg) {
+    public static <T, R> R getFromScheduler(Getter<T, R> getter, T arg) {
         return getFromScheduler(getter, arg, "Error while getting information from scheduler");
     }
 }

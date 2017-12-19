@@ -5,15 +5,18 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
-import uk.gov.hmcts.reform.jobscheduler.model.JobList;
+import uk.gov.hmcts.reform.jobscheduler.model.PageRequest;
+import uk.gov.hmcts.reform.jobscheduler.model.Pages;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -72,17 +75,22 @@ public class JobsService {
         }
     }
 
-    public JobList getAll(String serviceName) {
+    public Page<JobData> getAll(String serviceName, int page, int size) {
         Set<JobKey> jobKeys = getFromScheduler(scheduler::getJobKeys, GroupMatcher.jobGroupEquals(serviceName));
 
-        return new JobList(jobKeys
+        int total = jobKeys.size();
+
+        List<JobData> jobs = jobKeys
             .stream()
+            .skip(page * size)
+            .limit(size)
             .map(jobKey -> JobData.fromJob(
                 jobKey.getName(),
                 getJobFromDetail(getFromScheduler(scheduler::getJobDetail, jobKey))
             ))
-            .collect(Collectors.toList())
-        );
+            .collect(Collectors.toList());
+
+        return new Pages<>(jobs, PageRequest.of(page, size), total);
     }
 
     private Job getJobFromDetail(JobDetail jobDetail) {
