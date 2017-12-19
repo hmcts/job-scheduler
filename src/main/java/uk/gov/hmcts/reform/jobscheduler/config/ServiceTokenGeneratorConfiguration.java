@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.authorisation.generators.CachedServiceAuthTokenGenerator;
+import uk.gov.hmcts.reform.authorisation.generators.AutorefreshingJwtAuthTokenGenerator;
 import uk.gov.hmcts.reform.authorisation.generators.ServiceAuthTokenGenerator;
 
 @Configuration
@@ -19,16 +19,14 @@ public class ServiceTokenGeneratorConfiguration {
     public AuthTokenGenerator cachedServiceAuthTokenGenerator(
         @Value("${idam.s2s-auth.secret}") final String secret,
         @Value("${idam.s2s-auth.microservice}") final String microService,
-        @Value("${idam.s2s-auth.tokenTimeToLiveInSeconds}") final int ttl,
         final ServiceAuthorisationApi serviceAuthorisationApi
     ) {
-        return new CachedServiceAuthTokenGenerator(
+        return new AutorefreshingJwtAuthTokenGenerator(
             new ServiceAuthTokenGenerator(
                 secret,
                 microService,
                 serviceAuthorisationApi
-            ),
-            ttl
+            )
         );
     }
 }
