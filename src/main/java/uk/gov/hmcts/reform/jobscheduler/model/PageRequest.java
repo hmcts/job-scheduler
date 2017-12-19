@@ -13,6 +13,6 @@ public final class PageRequest extends org.springframework.data.domain.PageReque
     }
 
     public static PageRequest of(int page, int size) {
-        return new PageRequest(page, size, Sort.unsorted());
+        return new PageRequest(page, size, null);
     }
 }
