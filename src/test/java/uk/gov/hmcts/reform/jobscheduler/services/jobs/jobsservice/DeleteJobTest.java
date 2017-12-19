@@ -30,7 +30,7 @@ public class DeleteJobTest {
         String id = "abc123";
         String serviceName = "my service name";
 
-        given(scheduler.deleteJob(any())).willThrow(SchedulerException.class);
+        given(scheduler.deleteJob(any())).willThrow(new SchedulerException());
         JobsService jobsService = new JobsService(scheduler, actionSerializer);
 
         // when

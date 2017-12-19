@@ -63,7 +63,7 @@ public class HttpCallJob implements Job {
         }
     }
 
-    private static HttpEntity toHttpEntity(HttpAction action) {
+    private static HttpEntity<String> toHttpEntity(HttpAction action) {
         HttpHeaders httpHeaders = new HttpHeaders();
         action.headers.forEach(httpHeaders::add);
 

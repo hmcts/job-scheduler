@@ -15,6 +15,14 @@ version = '0.0.1'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+compileJava {
+  options.compilerArgs << "-Xlint:unchecked"
+}
+
+compileTestJava {
+  options.compilerArgs << "-Xlint:unchecked"
+}
+
 checkstyle {
   toolVersion = '8.4'
   // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
