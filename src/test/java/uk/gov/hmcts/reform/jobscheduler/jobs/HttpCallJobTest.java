@@ -36,6 +36,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.quartz.JobBuilder.newJob;
 
@@ -166,7 +167,7 @@ public class HttpCallJobTest {
                 anyString(),
                 any(HttpMethod.class),
                 any(HttpEntity.class),
-                any(Class.class)
+                eq(String.class)
             )
         ).willThrow(new RestClientException("test exception"));
 

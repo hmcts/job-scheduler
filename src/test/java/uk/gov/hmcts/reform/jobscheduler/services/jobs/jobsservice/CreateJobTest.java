@@ -79,8 +79,7 @@ public class CreateJobTest {
 
     @Test
     public void should_throw_an_exception_when_scheduler_fails() throws Exception {
-        given(scheduler.scheduleJob(any(), any()))
-            .willThrow(SchedulerException.class);
+        given(scheduler.scheduleJob(any(), any())).willThrow(new SchedulerException());
 
         JobsService jobsService = new JobsService(scheduler, actionSerializer);
 
