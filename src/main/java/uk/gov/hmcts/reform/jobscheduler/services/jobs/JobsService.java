@@ -47,10 +47,11 @@ public class JobsService {
     public String create(Job job, String serviceName) {
         try {
             String id = UUID.randomUUID().toString();
-            TriggerBuilder triggerBuilder = newTrigger().startAt(Date.from(job.trigger.startDateTime.toInstant()));
+            TriggerBuilder<org.quartz.Trigger> triggerBuilder = newTrigger()
+                .startAt(Date.from(job.trigger.startDateTime.toInstant()));
 
             if (null != job.trigger.interval && null != job.trigger.frequency) {
-                triggerBuilder = triggerBuilder.withSchedule(CalendarIntervalScheduleBuilder
+                triggerBuilder.withSchedule(CalendarIntervalScheduleBuilder
                     .calendarIntervalSchedule()
                     .withInterval(
                         job.trigger.interval,
