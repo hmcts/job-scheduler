@@ -50,7 +50,7 @@ public class JobsService {
             TriggerBuilder<org.quartz.Trigger> triggerBuilder = newTrigger()
                 .startAt(Date.from(job.trigger.startDateTime.toInstant()));
 
-            if (null != job.trigger.interval && null != job.trigger.frequency) {
+            if (job.trigger.interval != null && job.trigger.frequency != null) {
                 triggerBuilder.withSchedule(CalendarIntervalScheduleBuilder
                     .calendarIntervalSchedule()
                     .withInterval(
