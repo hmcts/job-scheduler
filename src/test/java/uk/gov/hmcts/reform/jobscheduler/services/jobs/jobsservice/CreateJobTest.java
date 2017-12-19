@@ -6,9 +6,11 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.quartz.CalendarIntervalScheduleBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
@@ -25,6 +27,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.jobscheduler.SampleData.validJob;
+import static uk.gov.hmcts.reform.jobscheduler.SampleData.validJobEmptyInterval;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateJobTest {
@@ -69,12 +72,25 @@ public class CreateJobTest {
     }
 
     @Test
-    public void should_create_a_trigger_with_datetime_specified_by_caller() throws Exception {
+    public void should_create_a_trigger_with_datetime_and_calendar_schedule() throws Exception {
         Job job = validJob();
         jobsService.create(job, "some service name");
 
-        assertThat(triggerPassedToScheduler().getStartTime())
-            .isEqualTo(Date.from(job.trigger.startDateTime.toInstant()));
+        Trigger trigger = triggerPassedToScheduler();
+
+        assertThat(trigger.getStartTime()).isEqualTo(Date.from(job.trigger.startDateTime.toInstant()));
+        assertThat(trigger.getScheduleBuilder()).isOfAnyClassIn(CalendarIntervalScheduleBuilder.class);
+    }
+
+    @Test
+    public void should_create_a_trigger_with_datetime_specified_by_caller() throws Exception {
+        Job job = validJobEmptyInterval();
+        jobsService.create(job, "some service name");
+
+        Trigger trigger = triggerPassedToScheduler();
+
+        assertThat(trigger.getStartTime()).isEqualTo(Date.from(job.trigger.startDateTime.toInstant()));
+        assertThat(trigger.getScheduleBuilder()).isOfAnyClassIn(SimpleScheduleBuilder.class);
     }
 
     @Test

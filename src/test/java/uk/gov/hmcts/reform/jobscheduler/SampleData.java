@@ -53,4 +53,21 @@ public final class SampleData {
             )
         );
     }
+
+    public static Job validJobEmptyInterval() {
+        return new Job(
+            "my-job-name",
+            new HttpAction(
+                "https://not-existing-service.gov.uk/do-stuff",
+                HttpMethod.POST,
+                ImmutableMap.of("Authorization", "token-goes-here"),
+                null
+            ),
+            new Trigger(
+                null,
+                null,
+                ZonedDateTime.now()
+            )
+        );
+    }
 }
