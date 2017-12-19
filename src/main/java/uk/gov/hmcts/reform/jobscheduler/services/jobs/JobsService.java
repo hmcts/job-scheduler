@@ -1,9 +1,13 @@
 package uk.gov.hmcts.reform.jobscheduler.services.jobs;
 
+import org.quartz.CalendarIntervalScheduleBuilder;
+import org.quartz.CalendarIntervalTrigger;
+import org.quartz.DateBuilder.IntervalUnit;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.TriggerBuilder;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -12,9 +16,13 @@ import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
 import uk.gov.hmcts.reform.jobscheduler.model.PageRequest;
 import uk.gov.hmcts.reform.jobscheduler.model.Pages;
+import uk.gov.hmcts.reform.jobscheduler.model.Trigger;
+import uk.gov.hmcts.reform.jobscheduler.model.Trigger.Frequency;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +32,6 @@ import java.util.stream.Collectors;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static uk.gov.hmcts.reform.jobscheduler.services.jobs.GetterFromScheduler.getFromScheduler;
-
 
 @Service
 public class JobsService {
@@ -40,6 +47,17 @@ public class JobsService {
     public String create(Job job, String serviceName) {
         try {
             String id = UUID.randomUUID().toString();
+            TriggerBuilder triggerBuilder = newTrigger().startAt(Date.from(job.trigger.startDateTime.toInstant()));
+
+            if (null != job.trigger.interval && null != job.trigger.frequency) {
+                triggerBuilder = triggerBuilder.withSchedule(CalendarIntervalScheduleBuilder
+                    .calendarIntervalSchedule()
+                    .withInterval(
+                        job.trigger.interval,
+                        IntervalUnit.valueOf(job.trigger.frequency.name())
+                    )
+                );
+            }
 
             scheduler.scheduleJob(
                 newJob(HttpCallJob.class)
@@ -49,9 +67,7 @@ public class JobsService {
                     .usingJobData(JobDataKeys.ATTEMPT, 1)
                     .requestRecovery()
                     .build(),
-                newTrigger()
-                    .startAt(Date.from(job.trigger.startDateTime.toInstant()))
-                    .build()
+                triggerBuilder.build()
             );
 
             return id;
@@ -94,10 +110,33 @@ public class JobsService {
     }
 
     private Job getJobFromDetail(JobDetail jobDetail) {
+        Trigger trigger = getFromScheduler(scheduler::getTriggersOfJob, jobDetail.getKey())
+            .stream()
+            .findFirst()
+            .map(quartzTrigger -> {
+                Frequency frequency = null;
+                Integer interval = null;
+
+                // otherwise it is a SimpleTrigger and only has default interval defined in library
+                if (quartzTrigger instanceof CalendarIntervalTrigger) {
+                    CalendarIntervalTrigger calendarTrigger = (CalendarIntervalTrigger) quartzTrigger;
+
+                    frequency = Frequency.valueOf(calendarTrigger.getRepeatIntervalUnit().name());
+                    interval = calendarTrigger.getRepeatInterval();
+                }
+
+                return new Trigger(
+                    frequency,
+                    interval,
+                    ZonedDateTime.ofInstant(quartzTrigger.getStartTime().toInstant(), ZoneId.systemDefault())
+                );
+            })
+            .orElse(null);
+
         return new Job(
             jobDetail.getDescription(),
             serializer.deserialize(jobDetail.getJobDataMap().getString(JobDataKeys.PARAMS)),
-            null
+            trigger
         );
     }
 }
