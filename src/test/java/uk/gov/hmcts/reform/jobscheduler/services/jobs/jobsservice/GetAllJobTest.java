@@ -62,7 +62,7 @@ public class GetAllJobTest {
         assertThat(pages1.getTotalElements()).isEqualTo(1);
         assertThat(pages1.getTotalPages()).isEqualTo(1);
         assertThat(pages1.getNumberOfElements()).isEqualTo(1);
-        assertThat(pages1.getContent()).extracting("action", HttpAction.class).isNotEmpty();
+        assertThat(pages1.getContent()).extracting("job.action", HttpAction.class).isNotEmpty();
         assertThat(pages1.getContent()).extracting("id", String.class).containsOnlyOnce("name1");
 
         Page<JobData> pages2 = setUpAndRetrieve(3, 1, 10);

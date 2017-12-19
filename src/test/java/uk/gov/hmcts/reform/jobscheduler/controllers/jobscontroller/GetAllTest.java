@@ -65,7 +65,7 @@ public class GetAllTest {
 
     @Test
     public void should_return_default_pages_when_no_parameters_are_passed() throws Exception {
-        JobData jobData = JobData.fromJob("some-id", validJob());
+        JobData jobData = new JobData("some-id", validJob());
         when(jobsService.getAll(anyString(), anyInt(), anyInt()))
             .thenReturn(new Pages<>(Collections.singletonList(jobData)));
 
@@ -73,7 +73,7 @@ public class GetAllTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("content[0].action").exists())
             .andExpect(jsonPath("content[0].id").value(jobData.id))
-            .andExpect(jsonPath("content[0].name").value(jobData.name))
+            .andExpect(jsonPath("content[0].name").value(jobData.job.name))
             .andExpect(jsonPath("total_pages").value(1))
             .andExpect(jsonPath("total_elements").value(1))
             .andExpect(jsonPath("number_of_elements").value(1));
@@ -148,7 +148,7 @@ public class GetAllTest {
         if (copies < 1) {
             jobs = Collections.emptyList();
         } else {
-            jobs = Collections.nCopies(Math.min(copies, size), JobData.fromJob("some-id", validJob()));
+            jobs = Collections.nCopies(Math.min(copies, size), new JobData("some-id", validJob()));
         }
 
         Page<JobData> pages = new Pages<>(jobs, PageRequest.of(page, size), total);

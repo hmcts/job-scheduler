@@ -84,7 +84,7 @@ public class JobsService {
             .stream()
             .skip(page * size)
             .limit(size)
-            .map(jobKey -> JobData.fromJob(
+            .map(jobKey -> new JobData(
                 jobKey.getName(),
                 getJobFromDetail(getFromScheduler(scheduler::getJobDetail, jobKey))
             ))
