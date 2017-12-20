@@ -11,7 +11,6 @@ import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.Trigger;
 import org.springframework.data.domain.Page;
 import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
@@ -26,13 +25,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.quartz.TriggerBuilder.newTrigger;
 import static uk.gov.hmcts.reform.jobscheduler.SampleData.validJob;
 import static uk.gov.hmcts.reform.jobscheduler.services.jobs.GetterFromScheduler.getFromScheduler;
 
@@ -92,17 +88,6 @@ public class GetAllJobTest {
         assertThat(pages5.getNumberOfElements()).isEqualTo(1);
     }
 
-    @Test
-    public void should_recreate_job_from_scheduler_data() throws SchedulerException {
-        Page<JobData> pages = setUpAndRetrieve(1, 0, 1);
-
-        pages.getContent().forEach(jobData -> {
-            assertThat(jobData.id).isEqualTo("name1");
-            assertThat(jobData.job.name).isEqualTo("description");
-            assertThat(jobData.job.trigger).isNotNull();
-        });
-    }
-
     private Page<JobData> setUpAndRetrieve(int total, int page, int size) throws SchedulerException {
         Set<JobKey> keys;
 
@@ -119,18 +104,8 @@ public class GetAllJobTest {
                         .withDescription("description")
                         .usingJobData(jobDataMap)
                         .build();
-                    Trigger trigger = newTrigger()
-                        .usingJobData(JobDataKeys.ATTEMPT, 1)
-                        .build();
 
                     when(getFromScheduler(scheduler::getJobDetail, jobKey)).thenReturn(jobDetail);
-
-                    try {
-                        doReturn(Collections.singletonList(trigger)).when(scheduler).getTriggersOfJob(jobKey);
-                    } catch (SchedulerException exc) {
-                        // capture of generic types of ? extends Smth is impossible with when/then
-                        fail("unable to return job triggers", exc);
-                    }
 
                     return jobKey;
                 })

@@ -16,16 +16,12 @@ import uk.gov.hmcts.reform.jobscheduler.model.Trigger;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.quartz.JobBuilder.newJob;
-import static org.quartz.TriggerBuilder.newTrigger;
 import static uk.gov.hmcts.reform.jobscheduler.services.jobs.GetterFromScheduler.getFromScheduler;
 
 @Service
@@ -50,10 +46,7 @@ public class JobsService {
                     .usingJobData(JobDataKeys.PARAMS, serializer.serialize(job.action))
                     .requestRecovery()
                     .build(),
-                newTrigger()
-                    .startAt(Date.from(job.trigger.startDateTime.toInstant()))
-                    .usingJobData(JobDataKeys.ATTEMPT, 1)
-                    .build()
+                TriggerConverter.toQuartzTrigger(job.trigger)
             );
 
             return id;
@@ -100,9 +93,7 @@ public class JobsService {
             .stream()
             .filter(quartzTrigger -> quartzTrigger.getJobDataMap().getIntValue(JobDataKeys.ATTEMPT) == 1)
             .findFirst()
-            .map(quartzTrigger -> new Trigger(
-                ZonedDateTime.ofInstant(quartzTrigger.getStartTime().toInstant(), ZoneId.systemDefault())
-            ))
+            .map(TriggerConverter::toPlatformTrigger)
             .orElse(null);
 
         return new Job(
