@@ -41,7 +41,6 @@ import static org.mockito.Mockito.mock;
 import static org.quartz.JobBuilder.newJob;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = ApplicationConfiguration.class)
 public class HttpCallJobTest {
 
     private static final String TEST_PATH = "/hello-world";
@@ -56,7 +55,7 @@ public class HttpCallJobTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule();
 
-    @Autowired RestTemplate restTemplate;
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Mock private ActionExtractor actionExtractor;
     @Mock private JobExecutionContext context;
