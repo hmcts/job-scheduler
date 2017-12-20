@@ -94,17 +94,6 @@ public class GetAllJobTest {
         assertThat(pages5.getNumberOfElements()).isEqualTo(1);
     }
 
-    @Test
-    public void should_recreate_job_from_scheduler_data() throws SchedulerException {
-        Page<JobData> pages = setUpAndRetrieve(1, 0, 1);
-
-        pages.getContent().forEach(jobData -> {
-            assertThat(jobData.id).isEqualTo("name1");
-            assertThat(jobData.job.name).isEqualTo("description");
-            assertThat(jobData.job.trigger).isNotNull();
-        });
-    }
-
     private Page<JobData> setUpAndRetrieve(int total, int page, int size) throws SchedulerException {
         Set<JobKey> keys;
 
