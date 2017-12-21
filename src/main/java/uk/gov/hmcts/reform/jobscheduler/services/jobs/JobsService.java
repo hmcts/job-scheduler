@@ -12,19 +12,17 @@ import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
 import uk.gov.hmcts.reform.jobscheduler.model.PageRequest;
 import uk.gov.hmcts.reform.jobscheduler.model.Pages;
+import uk.gov.hmcts.reform.jobscheduler.model.Trigger;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.quartz.JobBuilder.newJob;
-import static org.quartz.TriggerBuilder.newTrigger;
 import static uk.gov.hmcts.reform.jobscheduler.services.jobs.GetterFromScheduler.getFromScheduler;
-
 
 @Service
 public class JobsService {
@@ -46,12 +44,9 @@ public class JobsService {
                     .withIdentity(id, serviceName)
                     .withDescription(job.name)
                     .usingJobData(JobDataKeys.PARAMS, serializer.serialize(job.action))
-                    .usingJobData(JobDataKeys.ATTEMPT, 1)
                     .requestRecovery()
                     .build(),
-                newTrigger()
-                    .startAt(Date.from(job.trigger.startDateTime.toInstant()))
-                    .build()
+                TriggerConverter.toQuartzTrigger(job.trigger)
             );
 
             return id;
@@ -94,10 +89,17 @@ public class JobsService {
     }
 
     private Job getJobFromDetail(JobDetail jobDetail) {
+        Trigger trigger = getFromScheduler(scheduler::getTriggersOfJob, jobDetail.getKey())
+            .stream()
+            .filter(quartzTrigger -> quartzTrigger.getJobDataMap().getIntValue(JobDataKeys.ATTEMPT) == 1)
+            .findFirst()
+            .map(TriggerConverter::toPlatformTrigger)
+            .orElse(null);
+
         return new Job(
             jobDetail.getDescription(),
             serializer.deserialize(jobDetail.getJobDataMap().getString(JobDataKeys.PARAMS)),
-            null
+            trigger
         );
     }
 }
