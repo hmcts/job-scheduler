@@ -1,18 +1,16 @@
 package uk.gov.hmcts.reform.jobscheduler.controllers.jobscontroller;
 
-import feign.FeignException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.reform.authorisation.exceptions.AbstractAuthorisationException;
+import uk.gov.hmcts.reform.jobscheduler.FixtureData;
 import uk.gov.hmcts.reform.jobscheduler.controllers.JobsController;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
 import uk.gov.hmcts.reform.jobscheduler.model.PageRequest;
@@ -102,15 +100,7 @@ public class GetAllTest {
 
     @Test
     public void should_return_401_when_auth_token_is_invalid() throws Exception {
-        feign.Response feignResponse = feign.Response
-            .builder()
-            .status(HttpStatus.UNAUTHORIZED.value())
-            .headers(Collections.emptyMap())
-            .build();
-        FeignException feignException = FeignException.errorStatus("oh no", feignResponse);
-        AbstractAuthorisationException exception = AbstractAuthorisationException.parseFeignException(feignException);
-
-        given(authService.authenticate(anyString())).willThrow(exception);
+        given(authService.authenticate(anyString())).willThrow(FixtureData.setUpUnauthorisedAccess());
 
         sendGet().andExpect(status().isUnauthorized());
     }
