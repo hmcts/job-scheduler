@@ -12,10 +12,10 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGeneratorFactory;
 @Configuration
 @Lazy
 @EnableFeignClients(basePackageClasses = ServiceAuthorisationApi.class)
-public class ServiceTokenGeneratorConfiguration {
+public class ServiceTokenConfiguration {
 
     @Bean
-    public AuthTokenGenerator cachedServiceAuthTokenGenerator(
+    public AuthTokenGenerator tokenGenerator(
         @Value("${idam.s2s-auth.secret}") final String secret,
         @Value("${idam.s2s-auth.microservice}") final String microService,
         final ServiceAuthorisationApi serviceAuthorisationApi
