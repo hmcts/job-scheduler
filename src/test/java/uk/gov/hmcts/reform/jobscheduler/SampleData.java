@@ -30,8 +30,6 @@ public final class SampleData {
                 .put("body", "hello")
             )
             .put("trigger", new JSONObject()
-                .put("frequency", "minute")
-                .put("interval", 5)
                 .put("start_date_time", "2042-08-11T12:11:00Z")
             )
             .toString();
@@ -47,8 +45,6 @@ public final class SampleData {
                 null
             ),
             new Trigger(
-                Trigger.Frequency.DAY,
-                1,
                 ZonedDateTime.now()
             )
         );
