@@ -94,7 +94,6 @@ dependencies {
 
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix', version: '1.4.0.RELEASE'
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard', version: '1.4.0.RELEASE'
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '1.4.0.RELEASE'
 
   compile group: 'org.springframework.data', name: 'spring-data-commons', version: '1.13.9.RELEASE'
 
