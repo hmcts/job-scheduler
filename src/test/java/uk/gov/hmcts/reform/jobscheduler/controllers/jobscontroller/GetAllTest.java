@@ -100,7 +100,7 @@ public class GetAllTest {
 
     @Test
     public void should_return_401_when_auth_token_is_invalid() throws Exception {
-        given(validator.getServiceName(anyString())).willThrow(FixtureData.setUpUnauthorisedAccess());
+        given(validator.getServiceName(anyString())).willThrow(FixtureData.getAuthorisationException());
 
         sendGet().andExpect(status().isUnauthorized());
     }

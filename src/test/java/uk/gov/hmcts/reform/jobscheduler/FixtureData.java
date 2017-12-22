@@ -12,7 +12,7 @@ public final class FixtureData {
         // empty constructor
     }
 
-    public static AbstractAuthorisationException setUpUnauthorisedAccess() {
+    public static AbstractAuthorisationException getAuthorisationException() {
         feign.Response feignResponse = feign.Response
             .builder()
             .status(HttpStatus.UNAUTHORIZED.value())

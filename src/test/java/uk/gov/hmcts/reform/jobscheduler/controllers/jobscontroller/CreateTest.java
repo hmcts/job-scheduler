@@ -62,7 +62,7 @@ public class CreateTest {
 
     @Test
     public void should_return_401_when_token_is_invalid() throws Exception {
-        given(validator.getServiceName(anyString())).willThrow(FixtureData.setUpUnauthorisedAccess());
+        given(validator.getServiceName(anyString())).willThrow(FixtureData.getAuthorisationException());
 
         send(SampleData.jobJson())
             .andExpect(status().isUnauthorized());
