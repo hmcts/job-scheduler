@@ -39,8 +39,8 @@ quartzProperties:
       jobscheduler:
         driver: org.postgresql.Driver
         URL: ${spring.datasource.url}
-        user: jobscheduler
-        password: test
+        user: ${spring.datasource.username}
+        password: ${spring.datasource.password}
     jobStore:
       isClustered: true
       class: org.quartz.impl.jdbcjobstore.JobStoreTX
