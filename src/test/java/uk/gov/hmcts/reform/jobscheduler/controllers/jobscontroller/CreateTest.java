@@ -9,10 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
 import uk.gov.hmcts.reform.jobscheduler.FixtureData;
 import uk.gov.hmcts.reform.jobscheduler.SampleData;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
-import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -33,7 +33,7 @@ public class CreateTest {
 
     @Autowired private MockMvc mockMvc;
     @MockBean private JobsService jobsService;
-    @MockBean private AuthService authService;
+    @MockBean private ServiceAuthTokenValidator validator;
 
     @Test
     public void should_return_201_when_job_is_created() throws Exception {
@@ -62,7 +62,7 @@ public class CreateTest {
 
     @Test
     public void should_return_401_when_token_is_invalid() throws Exception {
-        given(authService.authenticate(anyString())).willThrow(FixtureData.setUpUnauthorisedAccess());
+        given(validator.getServiceName(anyString())).willThrow(FixtureData.setUpUnauthorisedAccess());
 
         send(SampleData.jobJson())
             .andExpect(status().isUnauthorized());

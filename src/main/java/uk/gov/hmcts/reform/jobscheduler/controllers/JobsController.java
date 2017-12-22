@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
-import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
 import java.net.URI;
@@ -39,11 +39,11 @@ public class JobsController {
     public static final int MAX_PAGE_SIZE = 100;
 
     private final JobsService jobsService;
-    private final AuthService authService;
+    private final ServiceAuthTokenValidator authTokenValidator;
 
-    public JobsController(JobsService jobsService, AuthService authService) {
+    public JobsController(JobsService jobsService, ServiceAuthTokenValidator authTokenValidator) {
         this.jobsService = jobsService;
-        this.authService = authService;
+        this.authTokenValidator = authTokenValidator;
     }
 
     @PostMapping(path = "")
@@ -52,7 +52,7 @@ public class JobsController {
         @Valid @RequestBody Job job,
         @RequestHeader("ServiceAuthorization") String serviceAuthHeader
     ) {
-        String serviceName = authService.authenticate(serviceAuthHeader);
+        String serviceName = authTokenValidator.getServiceName(serviceAuthHeader);
         String id = this.jobsService.create(job, serviceName);
 
         URI newJobUri = fromCurrentRequest().path("/{id}").buildAndExpand(id).toUri();
@@ -66,7 +66,7 @@ public class JobsController {
         @PathVariable("id") String id,
         @RequestHeader("ServiceAuthorization") String serviceAuthHeader
     ) {
-        String serviceName = authService.authenticate(serviceAuthHeader);
+        String serviceName = authTokenValidator.getServiceName(serviceAuthHeader);
         jobsService.delete(id, serviceName);
 
         return noContent().build();
@@ -87,7 +87,7 @@ public class JobsController {
                                 @RequestParam(value = "size", defaultValue = "10")
                                     int size
     ) {
-        String serviceName = authService.authenticate(serviceAuthHeader);
+        String serviceName = authTokenValidator.getServiceName(serviceAuthHeader);
 
         return jobsService.getAll(serviceName, page, size);
     }
