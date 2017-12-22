@@ -10,12 +10,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
+import uk.gov.hmcts.reform.jobscheduler.FixtureData;
 import uk.gov.hmcts.reform.jobscheduler.controllers.JobsController;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
 import uk.gov.hmcts.reform.jobscheduler.model.PageRequest;
 import uk.gov.hmcts.reform.jobscheduler.model.Pages;
-import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthException;
-import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
 import java.util.Arrays;
@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.jobscheduler.SampleData.validJob;
 public class GetAllTest {
     @Autowired private MockMvc mockMvc;
     @MockBean private JobsService jobsService;
-    @MockBean private AuthService authService;
+    @MockBean private ServiceAuthTokenValidator validator;
 
     @Test
     public void should_return_no_data_when_empty_job_list_is_returned() {
@@ -100,7 +100,7 @@ public class GetAllTest {
 
     @Test
     public void should_return_401_when_auth_token_is_invalid() throws Exception {
-        given(authService.authenticate(anyString())).willThrow(new AuthException(null, null));
+        given(validator.getServiceName(anyString())).willThrow(FixtureData.getAuthorisationException());
 
         sendGet().andExpect(status().isUnauthorized());
     }

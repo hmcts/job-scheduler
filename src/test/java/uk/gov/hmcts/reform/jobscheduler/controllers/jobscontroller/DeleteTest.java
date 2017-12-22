@@ -9,8 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthException;
-import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthService;
+import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
+import uk.gov.hmcts.reform.jobscheduler.FixtureData;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
 import static org.mockito.BDDMockito.given;
@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DeleteTest {
     @Autowired private MockMvc mockMvc;
     @MockBean private JobsService jobsService; //NOPMD suppress, mock needed
-    @MockBean private AuthService authService;
+    @MockBean private ServiceAuthTokenValidator validator;
 
     @Test
     public void should_return_204_when_job_is_deleted() throws Exception {
@@ -32,8 +32,7 @@ public class DeleteTest {
 
     @Test
     public void should_return_401_when_auth_token_is_invalid() throws Exception {
-        given(authService.authenticate(anyString()))
-            .willThrow(new AuthException(null, null));
+        given(validator.getServiceName(anyString())).willThrow(FixtureData.getAuthorisationException());
 
         sendDelete().andExpect(status().isUnauthorized());
     }
