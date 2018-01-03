@@ -30,7 +30,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.jobscheduler.SampleData.validJob;
-import static uk.gov.hmcts.reform.jobscheduler.services.jobs.GetterFromScheduler.call;
+import static uk.gov.hmcts.reform.jobscheduler.services.jobs.SchedulerExceptionHandlingHelper.call;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetAllJobTest {

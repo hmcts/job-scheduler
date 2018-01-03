@@ -22,7 +22,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.quartz.JobBuilder.newJob;
-import static uk.gov.hmcts.reform.jobscheduler.services.jobs.GetterFromScheduler.call;
+import static uk.gov.hmcts.reform.jobscheduler.services.jobs.SchedulerExceptionHandlingHelper.call;
 
 @Service
 public class JobsService {
