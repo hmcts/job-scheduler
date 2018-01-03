@@ -5,9 +5,6 @@ management:
   security:
     enabled: ${MANAGEMENT_SECURITY_ENABLED:true}
 
-s2s:
-  url: ${S2S_URL}
-
 idam:
   s2s-auth:
     url: ${S2S_URL}
@@ -42,8 +39,8 @@ quartzProperties:
       jobscheduler:
         driver: org.postgresql.Driver
         URL: ${spring.datasource.url}
-        user: jobscheduler
-        password: test
+        user: ${spring.datasource.username}
+        password: ${spring.datasource.password}
     jobStore:
       isClustered: true
       class: org.quartz.impl.jdbcjobstore.JobStoreTX

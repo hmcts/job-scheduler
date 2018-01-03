@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
+import uk.gov.hmcts.reform.authorisation.exceptions.ServiceException;
 import uk.gov.hmcts.reform.jobscheduler.model.errors.FieldError;
 import uk.gov.hmcts.reform.jobscheduler.model.errors.ModelValidationError;
-import uk.gov.hmcts.reform.jobscheduler.services.auth.AuthException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
 
 import java.util.Collections;
@@ -60,12 +61,12 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
         // empty method
     }
 
-    @ExceptionHandler(FeignException.class)
+    @ExceptionHandler({FeignException.class, ServiceException.class})
     protected ResponseEntity<Object> handleFeignException(FeignException exc) {
         return status(exc.status()).build();
     }
 
-    @ExceptionHandler(AuthException.class)
+    @ExceptionHandler(InvalidTokenException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     protected void handleAuthException() {
         // empty method
