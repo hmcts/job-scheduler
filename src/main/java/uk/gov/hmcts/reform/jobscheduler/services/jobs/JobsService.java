@@ -22,7 +22,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.quartz.JobBuilder.newJob;
-import static uk.gov.hmcts.reform.jobscheduler.services.jobs.GetterFromScheduler.getFromScheduler;
+import static uk.gov.hmcts.reform.jobscheduler.services.jobs.GetterFromScheduler.call;
 
 @Service
 public class JobsService {
@@ -71,7 +71,7 @@ public class JobsService {
     }
 
     public Page<JobData> getAll(String serviceName, int page, int size) {
-        Set<JobKey> jobKeys = getFromScheduler(scheduler::getJobKeys, GroupMatcher.jobGroupEquals(serviceName));
+        Set<JobKey> jobKeys = call(() -> scheduler.getJobKeys(GroupMatcher.jobGroupEquals(serviceName)));
 
         int total = jobKeys.size();
 
@@ -81,7 +81,7 @@ public class JobsService {
             .limit(size)
             .map(jobKey -> new JobData(
                 jobKey.getName(),
-                getJobFromDetail(getFromScheduler(scheduler::getJobDetail, jobKey))
+                getJobFromDetail(call(() -> scheduler.getJobDetail(jobKey)))
             ))
             .collect(Collectors.toList());
 
@@ -89,7 +89,7 @@ public class JobsService {
     }
 
     private Job getJobFromDetail(JobDetail jobDetail) {
-        Trigger trigger = getFromScheduler(scheduler::getTriggersOfJob, jobDetail.getKey())
+        Trigger trigger = call(() -> scheduler.getTriggersOfJob(jobDetail.getKey()))
             .stream()
             .filter(quartzTrigger -> quartzTrigger.getJobDataMap().getIntValue(JobDataKeys.ATTEMPT) == 1)
             .findFirst()

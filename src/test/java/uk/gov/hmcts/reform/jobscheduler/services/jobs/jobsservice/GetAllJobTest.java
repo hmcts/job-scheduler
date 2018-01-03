@@ -30,7 +30,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.jobscheduler.SampleData.validJob;
-import static uk.gov.hmcts.reform.jobscheduler.services.jobs.GetterFromScheduler.getFromScheduler;
+import static uk.gov.hmcts.reform.jobscheduler.services.jobs.GetterFromScheduler.call;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetAllJobTest {
@@ -105,7 +105,7 @@ public class GetAllJobTest {
                         .usingJobData(jobDataMap)
                         .build();
 
-                    when(getFromScheduler(scheduler::getJobDetail, jobKey)).thenReturn(jobDetail);
+                    when(call(() -> scheduler.getJobDetail(jobKey))).thenReturn(jobDetail);
 
                     return jobKey;
                 })
