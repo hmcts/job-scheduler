@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.jobscheduler.services.jobs;
 import org.quartz.SchedulerException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 
-public class SchedulerExceptionHandlingHelper {
+public final class SchedulerExceptionHandlingHelper {
 
     @FunctionalInterface
     public interface ThrowingSupplier<T> {
