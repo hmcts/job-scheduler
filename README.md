@@ -55,7 +55,7 @@ To run all checks execute the following command:
 
 ## Job management
 
-The service manages its clients' jobs with (Quartz)[http://www.quartz-scheduler.org/].
+The service manages its clients' jobs with [Quartz](http://www.quartz-scheduler.org/).  
 It uses a PostgreSQL database for persisting those jobs. Also, Quartz is configured
 to run in cluster mode, i.e. the load will be distributed among multiple nodes, each
 running different jobs.
