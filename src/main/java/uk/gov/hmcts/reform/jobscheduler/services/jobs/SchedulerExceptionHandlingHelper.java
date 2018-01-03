@@ -10,6 +10,12 @@ public class SchedulerExceptionHandlingHelper {
         T get() throws SchedulerException;
     }
 
+    /**
+     * Calls provided function and wraps SchedulerException in checked exception if it fails.
+     *
+     * @param throwingSupplier just like Supplier, but can throw SchedulerException
+     * @return result of calling supplier. Throws unchecked exception if it failed.
+     */
     public static <T> T call(ThrowingSupplier<T> throwingSupplier) {
         try {
             return throwingSupplier.get();
