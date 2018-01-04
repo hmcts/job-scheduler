@@ -26,8 +26,6 @@ services:
       - REFORM_SERVICE_NAME
       - REFORM_TEAM
       - REFORM_ENVIRONMENT
-    volumes:
-      - ./build/install/job-scheduler:/opt/app/
     ports:
       - $SERVER_PORT:$SERVER_PORT
     depends_on:
@@ -42,8 +40,3 @@ services:
       - JOB_SCHEDULER_DB_PASSWORD
     ports:
       - 5428:5432
-    volumes:
-      - job-scheduler-db-data:/var/lib/postgresql/data
-
-volumes:
-  job-scheduler-db-data:
