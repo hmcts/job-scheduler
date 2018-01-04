@@ -30,8 +30,27 @@ In order to run the application (with its database) in Docker, execute:
 ./bin/run-in-docker.sh
 ```
 
-This script creates a distribution archive for the project, sets up Docker containers
-for the application and job database (if those are not set up already) and starts the service.
+For more information:
+
+```bash
+./bin/run-in-docker.sh -h
+```
+
+Script includes bare minimum environment variables necessary to start database and api instances. Whenever any variable is changed or any other script regarding docker image/container build, the suggested way to ensure all is cleaned up properly is by this command:
+
+```bash
+docker-compose rm
+```
+
+It clears stopped containers correctly. Might consider removing clutter of images too, especially the ones fiddled with:
+
+```bash
+docker images
+
+docker image rm <image-id>
+```
+
+There is no need to remove postgres and java images.
 
 ## API documentation
 Api documentation is provided with Swagger:
