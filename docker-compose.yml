@@ -29,7 +29,7 @@ services:
     volumes:
       - ./build/install/job-scheduler:/opt/app/
     ports:
-      - 8484:8484
+      - $SERVER_PORT:$SERVER_PORT
     depends_on:
       database:
         condition: service_healthy
