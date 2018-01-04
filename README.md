@@ -53,6 +53,36 @@ To run all checks execute the following command:
 ./gradlew check
 ```
 
+### Docker
+
+To run API in docker container execute the following:
+
+```bash
+./bin/run-in-docker.sh
+```
+
+If you already ran this command before or stepped through manually, just play around with docker commands and follow the instructions
+
+```bash
+docker-compose up
+```
+
+Script includes bare minimum environment variables necessary to start (no successfully!) database and api instances. Whenever any variable is changed or any other script regarding docker image/container build, the suggested way to ensure all is cleaned up properly is by this command:
+
+```bash
+docker-compose rm
+```
+
+It clears stopped containers correctly. Might consider removing clutter of images too, especially the ones fiddled with:
+
+```bash
+docker images
+
+docker image rm <image-id>
+```
+
+There is no need to remove postgres and java images.
+
 ## Job management
 
 The service manages its clients' jobs with [Quartz](http://www.quartz-scheduler.org/).  
