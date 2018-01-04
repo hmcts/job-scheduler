@@ -1,14 +1,16 @@
----
 version: '2.1'
 
 services:
-  job-scheduler-api:
+  api:
     build:
       context: .
       args:
         - http_proxy
         - https_proxy
         - no_proxy
+    command: --wait-for-database 30
+    image: docker.artifactory.reform.hmcts.net/job-scheduler/api
+    container_name: job-scheduler-api
     environment:
       - S2S_URL
       - S2S_SECRET
@@ -29,18 +31,19 @@ services:
     ports:
       - 8484:8484
     depends_on:
-      job-scheduler-database:
+      database:
         condition: service_healthy
-  job-scheduler-database:
+  database:
     build:
       context: docker/database
-    image: docker.artifactory.reform.hmcts.net/reform/job-scheduler-database
+    image: docker.artifactory.reform.hmcts.net/job-scheduler/db
+    container_name: job-scheduler-db
     environment:
       - JOB_SCHEDULER_DB_PASSWORD
     ports:
       - 5428:5432
     volumes:
-      - job-scheduler-database-data:/var/lib/postgresql/data
+      - job-scheduler-db-data:/var/lib/postgresql/data
 
 volumes:
-  job-scheduler-database-data:
+  job-scheduler-db-data:
