@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.FailedJobRescheduler;
 
@@ -37,6 +38,7 @@ public class QuartzConfiguration {
     }
 
     @Bean
+    @DependsOn("flywayInitializer")
     public SchedulerFactoryBean schedulerFactoryBean(JobFactory jobFactory) {
         Properties properties = new Properties();
         properties.putAll(quartzProperties);
