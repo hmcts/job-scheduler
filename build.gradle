@@ -84,6 +84,7 @@ dependencies {
   compile group: 'org.flywaydb', name: 'flyway-core', version: '5.0.2'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
 
+  compile group: 'com.microsoft.azure', name: 'azure-keyvault-secrets-spring-boot-starter', version: '0.2.0'
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
   compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310'
 

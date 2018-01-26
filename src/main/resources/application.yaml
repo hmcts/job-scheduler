@@ -53,3 +53,9 @@ quartzProperties:
 retryPolicy:
   maxNumberOfJobExecutions: ${MAX_NUMBER_OF_JOB_EXECUTIONS:5}
   delayBetweenAttemptsInMs: ${DELAY_BETWEEN_JOB_ATTEMPTS_MS:15000}
+
+azure:
+  keyvault:
+    uri: ${AZURE_KEYVAULT_URI}
+    client-id: ${AZURE_KEYVAULT_CLIENT_ID}
+    client-key: ${AZURE_KEYVAULT_CLIENT_KEY}
