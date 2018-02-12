@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.jobscheduler.jobs;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,8 +16,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
+import uk.gov.hmcts.reform.jobscheduler.services.s2s.AuthTokenGeneratorStub;
+import uk.gov.hmcts.reform.jobscheduler.services.s2s.S2sClient;
 
 import java.util.Collections;
 import java.util.Map;
@@ -29,6 +31,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -44,19 +47,22 @@ public class HttpCallJobTest {
     private static final String TEST_BODY = "some-body";
     private static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
     private static final String X_CUSTOM_HEADER = "X-Custom-Header";
-    private static final String NEW_S2S_TOKEN = "newly-generated-token";
+    private static final String NEW_S2S_TOKEN = "123456";
     private static final String OLD_S2S_TOKEN = "some-token";
     private static final String CUSTOM_VALUE = "anything";
     private static final String JOB_ID = "jobId123";
 
+    @ClassRule
+    public static WireMockClassRule wireMockClassRule = new WireMockClassRule(options().dynamicHttpsPort());
+
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule();
+    public WireMockClassRule wireMockRule = wireMockClassRule;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Mock private ActionExtractor actionExtractor;
     @Mock private JobExecutionContext context;
-    @Mock private AuthTokenGenerator authTokenGenerator;
+    @Mock private S2sClient s2sClient;
 
     @Before
     public void setup() {
@@ -68,7 +74,7 @@ public class HttpCallJobTest {
         given(context.getJobDetail())
             .willReturn(newJob(HttpCallJob.class).withIdentity(JOB_ID, "group").build());
 
-        given(authTokenGenerator.generate()).willReturn(NEW_S2S_TOKEN);
+        given(s2sClient.getTokenGenerator()).willReturn(new AuthTokenGeneratorStub());
         given(actionExtractor.extract(any())).willReturn(createSampleAction());
     }
 
@@ -169,7 +175,7 @@ public class HttpCallJobTest {
 
         actionHadHeadersSetTo(ImmutableMap.of("header", "value"));
 
-        HttpCallJob job = new HttpCallJob(mockRestTemplate, actionExtractor, authTokenGenerator);
+        HttpCallJob job = new HttpCallJob(mockRestTemplate, actionExtractor, s2sClient);
 
         assertThatThrownBy(
             () -> job.execute(context)
@@ -215,6 +221,6 @@ public class HttpCallJobTest {
     }
 
     private void executingHttpCallJob() throws JobExecutionException {
-        new HttpCallJob(restTemplate, actionExtractor, authTokenGenerator).execute(context);
+        new HttpCallJob(restTemplate, actionExtractor, s2sClient).execute(context);
     }
 }

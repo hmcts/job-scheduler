@@ -9,11 +9,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
 import uk.gov.hmcts.reform.jobscheduler.FixtureData;
 import uk.gov.hmcts.reform.jobscheduler.SampleData;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
+import uk.gov.hmcts.reform.jobscheduler.services.s2s.S2sClient;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
@@ -33,7 +33,7 @@ public class CreateTest {
 
     @Autowired private MockMvc mockMvc;
     @MockBean private JobsService jobsService;
-    @MockBean private ServiceAuthTokenValidator validator;
+    @MockBean private S2sClient s2sClient;
 
     @Test
     public void should_return_201_when_job_is_created() throws Exception {
@@ -62,7 +62,7 @@ public class CreateTest {
 
     @Test
     public void should_return_401_when_token_is_invalid() throws Exception {
-        given(validator.getServiceName(anyString())).willThrow(FixtureData.getAuthorisationException());
+        given(s2sClient.getServiceName(anyString())).willThrow(FixtureData.getAuthorisationException());
 
         send(SampleData.jobJson())
             .andExpect(status().isUnauthorized());
