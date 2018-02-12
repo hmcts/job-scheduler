@@ -16,12 +16,33 @@ version = '0.0.1'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+sourceSets {
+  functionalTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/functionalTest/java')
+    }
+    resources.srcDir file('src/functionalTest/resources')
+  }
+}
+
 compileJava {
   options.compilerArgs << "-Xlint:unchecked"
 }
 
 compileTestJava {
   options.compilerArgs << "-Xlint:unchecked"
+}
+
+compileFunctionalTestJava {
+  options.compilerArgs << "-Xlint:unchecked"
+}
+
+task functional(type: Test) {
+  description = "Runs Functional Tests"
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = sourceSets.functionalTest.runtimeClasspath
 }
 
 checkstyle {
@@ -33,12 +54,13 @@ checkstyle {
 pmd {
   toolVersion = "5.8.1"
   ignoreFailures = true
-  sourceSets = [sourceSets.main, sourceSets.test]
+  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest]
   reportsDir = file("$project.buildDir/reports/pmd")
   ruleSetFiles = files("config/pmd/ruleset.xml")
 }
 
 jacocoTestReport {
+  executionData(test, functional)
   reports {
     xml.enabled = true
     csv.enabled = false
@@ -46,11 +68,12 @@ jacocoTestReport {
   }
 }
 
-project.tasks['sonarqube'].dependsOn test
+project.tasks['sonarqube'].dependsOn test, functional
 sonarqube {
   properties {
     property "sonar.projectName", "Reform :: Job Scheduler"
     property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+    property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/functionalTest.exec"
   }
 }
 
@@ -116,5 +139,8 @@ dependencies {
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.0'
   testCompile group: 'com.github.tomakehurst', name: 'wiremock-standalone', version: '2.12.0'
   testCompile group: 'org.json', name: 'json', version: '20171018'
+
+  functionalTestCompile sourceSets.main.runtimeClasspath
+  functionalTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 
 }
