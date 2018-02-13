@@ -52,8 +52,11 @@ public class HttpCallJobTest {
     private static final String JOB_ID = "jobId123";
 
     @ClassRule
-    public static WireMockClassRule wireMockClassRule = new WireMockClassRule(options().dynamicHttpsPort());
-
+    public static WireMockClassRule wireMockClassRule = new WireMockClassRule(
+        options()
+            .dynamicHttpsPort()
+            .dynamicPort()
+    );
     @Rule
     public WireMockClassRule wireMockRule = wireMockClassRule;
 
@@ -65,6 +68,7 @@ public class HttpCallJobTest {
 
     @Before
     public void setup() {
+
         stubFor(
             post(urlEqualTo(TEST_PATH))
                 .willReturn(aResponse().withStatus(200))
@@ -212,7 +216,7 @@ public class HttpCallJobTest {
 
     private HttpAction createSampleAction(Map<String, String> headers) {
         return new HttpAction(
-            "http://localhost:8080" + TEST_PATH,
+            "http://localhost:" + wireMockClassRule.port() + TEST_PATH,
             HttpMethod.POST,
             headers,
             TEST_BODY
