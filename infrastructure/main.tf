@@ -49,7 +49,7 @@ module "job-scheduler-api" {
 }
 
 module "job-scheduler-database" {
-  source = "git@github.com:contino/moj-module-postgres?ref=random-password"
+  source = "git@github.com:contino/moj-module-postgres"
   product = "${var.product}-ase"
   location = "West Europe"
   env = "${var.env}"
