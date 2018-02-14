@@ -1,28 +1,39 @@
 variable "product" {
+  type    = "string"
   default = "platform"
 }
 
 variable "microservice" {
-  default = "jobscheduler"
+  type    = "string"
+  default = "job-scheduler"
 }
 
 variable "location" {
+  type    = "string"
   default = "UK South"
 }
 
-variable "env" {}
+variable "location_db" {
+  type    = "string"
+  default = "West Europe"
+}
+
+variable "env" {
+  type    = "string"
+}
 
 variable "test-s2s-url" {
+  type    = "string"
   default = "http://betaDevBccidamS2SLB.reform.hmcts.net"
 }
 
 variable "prod-s2s-url" {
+  type    = "string"
   default = "http://betaProdccidamAppLB.reform.hmcts.net:4502"
 }
 
-
 variable "database-name" {
-  default = "postgres"
+  default = "jobscheduler"
 }
 
 variable "ilbIp" {}
