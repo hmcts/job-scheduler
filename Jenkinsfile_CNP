@@ -1,28 +1,15 @@
 #!groovy
+@Library("Infrastructure")
 
-@Library("Infrastructure@feature/Fetch-vault-secrets")
-
+def type = "java"
 def product = "platform"
 def component = "job-scheduler"
 
-// All secrets used in this project defined here to hide them in the build logs
-List<LinkedHashMap<String, Object>> secrets = [
-  basicSecret("secret/test/ccidam/service-auth-provider/api/microservice-keys/platformJobScheduler", 'IGNORED2')
-]
+def channel = '#rpe'
 
-static LinkedHashMap<String, Object> basicSecret(String path, String envVar) {
-  secret(path, envVar, 'value')
-}
-
-static LinkedHashMap<String, Object> secret(String path, String envVar, String value) {
-  [$class: 'VaultSecret', path: path, secretValues:
-    [
-      [$class: 'VaultSecretValue', envVar: envVar, vaultKey: value]
-    ]
-  ]
-}
-
-withPipeline("java", product, component) {
-  loadVaultSecrets(secrets)
-  enableSlackNotifications('#rpe')
+withPipeline(type , product, component) {
+    before('build') {
+      sh './gradlew check'
+    }
+    enableSlackNotifications(channel)
 }
