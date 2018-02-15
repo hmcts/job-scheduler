@@ -73,7 +73,7 @@ sonarqube {
   properties {
     property "sonar.projectName", "Reform :: Job Scheduler"
     property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-    property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/functionalTest.exec"
+    property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/functional.exec"
   }
 }
 
