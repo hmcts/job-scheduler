@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.jobscheduler.jobs.HttpCallJob;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
-import uk.gov.hmcts.reform.jobscheduler.model.PageRequest;
+import uk.gov.hmcts.reform.jobscheduler.model.JobSchedulerPageRequest;
 import uk.gov.hmcts.reform.jobscheduler.model.Pages;
 import uk.gov.hmcts.reform.jobscheduler.model.Trigger;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
@@ -77,7 +77,7 @@ public class JobsService {
 
         List<JobData> jobs = jobKeys
             .stream()
-            .skip(page * size)
+            .skip(page * (long)size)
             .limit(size)
             .map(jobKey -> new JobData(
                 jobKey.getName(),
@@ -85,7 +85,7 @@ public class JobsService {
             ))
             .collect(Collectors.toList());
 
-        return new Pages<>(jobs, PageRequest.of(page, size), total);
+        return new Pages<>(jobs, JobSchedulerPageRequest.of(page, size), total);
     }
 
     private Job getJobFromDetail(JobDetail jobDetail) {

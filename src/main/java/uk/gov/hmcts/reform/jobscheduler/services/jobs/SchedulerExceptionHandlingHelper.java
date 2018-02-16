@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.jobscheduler.services.jobs;
 import org.quartz.SchedulerException;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobException;
 
+@SuppressWarnings("HideUtilityClassConstructor")
 public final class SchedulerExceptionHandlingHelper {
 
     @FunctionalInterface
@@ -22,8 +23,5 @@ public final class SchedulerExceptionHandlingHelper {
         } catch (SchedulerException exc) {
             throw new JobException(exc.getMessage(), exc);
         }
-    }
-
-    private SchedulerExceptionHandlingHelper() {
     }
 }
