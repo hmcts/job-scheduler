@@ -16,9 +16,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
-import uk.gov.hmcts.reform.jobscheduler.services.s2s.AuthTokenGeneratorStub;
-import uk.gov.hmcts.reform.jobscheduler.services.s2s.S2sClient;
 
 import java.util.Collections;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class HttpCallJobTest {
     private static final String TEST_BODY = "some-body";
     private static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
     private static final String X_CUSTOM_HEADER = "X-Custom-Header";
-    private static final String NEW_S2S_TOKEN = "123456";
+    private static final String NEW_S2S_TOKEN = "newly-generated-token";
     private static final String OLD_S2S_TOKEN = "some-token";
     private static final String CUSTOM_VALUE = "anything";
     private static final String JOB_ID = "jobId123";
@@ -62,7 +61,7 @@ public class HttpCallJobTest {
 
     @Mock private ActionExtractor actionExtractor;
     @Mock private JobExecutionContext context;
-    @Mock private S2sClient s2sClient;
+    @Mock private AuthTokenGenerator authTokenGenerator;
 
     @Before
     public void setup() {
@@ -74,7 +73,7 @@ public class HttpCallJobTest {
         given(context.getJobDetail())
             .willReturn(newJob(HttpCallJob.class).withIdentity(JOB_ID, "group").build());
 
-        given(s2sClient.getTokenGenerator()).willReturn(new AuthTokenGeneratorStub());
+        given(authTokenGenerator.generate()).willReturn(NEW_S2S_TOKEN);
         given(actionExtractor.extract(any())).willReturn(createSampleAction());
     }
 
@@ -175,7 +174,7 @@ public class HttpCallJobTest {
 
         actionHadHeadersSetTo(ImmutableMap.of("header", "value"));
 
-        HttpCallJob job = new HttpCallJob(mockRestTemplate, actionExtractor, s2sClient);
+        HttpCallJob job = new HttpCallJob(mockRestTemplate, actionExtractor, authTokenGenerator);
 
         assertThatThrownBy(
             () -> job.execute(context)
@@ -221,6 +220,6 @@ public class HttpCallJobTest {
     }
 
     private void executingHttpCallJob() throws JobExecutionException {
-        new HttpCallJob(restTemplate, actionExtractor, s2sClient).execute(context);
+        new HttpCallJob(restTemplate, actionExtractor, authTokenGenerator).execute(context);
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
-import uk.gov.hmcts.reform.jobscheduler.services.s2s.S2sClient;
 
 @Component
 @PersistJobDataAfterExecution
@@ -30,11 +29,11 @@ public class HttpCallJob implements Job {
     public HttpCallJob(
         RestTemplate restTemplate,
         ActionExtractor actionExtractor,
-        S2sClient s2sClient
+        AuthTokenGenerator tokenGenerator
     ) {
         this.restTemplate = restTemplate;
         this.actionExtractor = actionExtractor;
-        this.tokenGenerator = s2sClient.getTokenGenerator();
+        this.tokenGenerator = tokenGenerator;
     }
 
     @Override
