@@ -83,7 +83,7 @@ jacocoTestReport {
   afterEvaluate {
     classDirectories = files(classDirectories.files.collect {
       fileTree(dir: it,
-        exclude: ['uk/gov/hmcts/reform/jobscheduler/config/**'])
+        exclude: ['**/src/main/java/uk/gov/hmcts/reform/uk/gov/hmcts/reform/jobscheduler/config/**'])
     })
   }
 }
