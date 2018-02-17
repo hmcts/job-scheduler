@@ -16,7 +16,7 @@ locals {
 }
 
 data "vault_generic_secret" "s2s_secret" {
-  path = "secret/${var.env}/ccidam/service-auth-provider/api/microservice-keys/platformJobScheduler"
+  path = "secret/test/ccidam/service-auth-provider/api/microservice-keys/platformJobScheduler"
 }
 
 module "job-scheduler-database" {
