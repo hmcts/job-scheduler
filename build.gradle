@@ -80,11 +80,6 @@ jacocoTestReport {
     xml.destination file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
-test {
-  jacoco {
-    excludes += ['**/uk/gov/hmcts/reform/jobscheduler/config/**']
-  }
-}
 
 project.tasks['sonarqube'].dependsOn test, functional
 sonarqube {
@@ -92,6 +87,7 @@ sonarqube {
     property "sonar.projectName", "Reform :: Job Scheduler"
     property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
     property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/functional.exec"
+    property 'sonar.coverage.exclusions', "**/src/main/java/uk/gov/hmcts/reform/jobscheduler/config/**"
   }
 }
 
@@ -123,6 +119,10 @@ dependencyCheck {
 }
 
 repositories {
+  // until new projects get to jcenter
+  maven {
+    url "https://dl.bintray.com/hmcts/hmcts-maven"
+  }
   jcenter()
 }
 
