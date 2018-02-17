@@ -33,10 +33,6 @@ spring:
     testOnBorrow: true
     validationQuery: SELECT 1
 
-flyway:
-  schemas:
-    - ${JOB_SCHEDULER_DB_NAME:jobscheduler}
-
 quartzProperties:
   org.quartz:
     scheduler:
