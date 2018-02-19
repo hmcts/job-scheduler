@@ -13,7 +13,7 @@ data "vault_generic_secret" "s2s_secret" {
 }
 
 module "job-scheduler-database" {
-  source              = "git@github.com:contino/moj-module-postgres.git"
+  source              = "git@github.com:contino/moj-module-postgres.git?ref=master"
   product             = "${var.product}-${var.microservice}-db"
   location            = "${var.location_db}"
   env                 = "${var.env}"
@@ -22,7 +22,7 @@ module "job-scheduler-database" {
 }
 
 module "job-scheduler-api" {
-  source              = "git@github.com:contino/moj-module-webapp.git"
+  source              = "git@github.com:contino/moj-module-webapp.git?ref=master"
   product             = "${var.product}-${var.microservice}"
   location            = "${var.location}"
   env                 = "${var.env}"
@@ -46,4 +46,14 @@ module "job-scheduler-api" {
     JOB_SCHEDULER_DB_NAME     = "${module.job-scheduler-database.postgresql_database}"
     JOB_SCHEDULER_DB_CONNECTION_OPTIONS = "?ssl"
   }
+}
+
+module "job-scheduler-vault" {
+  source              = "git@github.com:contino/moj-module-key-vault?ref=master"
+  name                = "job-scheduler-${var.env}"
+  product             = "${var.product}-${var.microservice}-vault"
+  env                 = "${var.env}"
+  tenant_id           = "${var.tenant_id}"
+  object_id           = "${var.jenkins_AAD_objectId}"
+  resource_group_name = "${module.job-scheduler-api.resource_group_name}"
 }
