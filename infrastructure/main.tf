@@ -4,13 +4,6 @@ provider "vault" {
   address = "https://vault.reform.hmcts.net:6200"
 }
 
-# Make sure the resource group exists
-resource "azurerm_resource_group" "rg" {
-  name      = "${var.product}-${var.microservice}-${var.env}"
-  location  = "${var.location}"
-}
-
-
 locals {
   vault_section = "${var.env == "prod" ? "prod" : "test"}"
 }
@@ -21,7 +14,7 @@ data "vault_generic_secret" "s2s_secret" {
 
 module "job-scheduler-database" {
   source              = "git@github.com:contino/moj-module-postgres.git"
-  product             = "${var.product}-ase"
+  product             = "${var.product}-${var.microservice}-db"
   location            = "${var.location_db}"
   env                 = "${var.env}"
   postgresql_database = "${var.database-name}"
@@ -34,7 +27,6 @@ module "job-scheduler-api" {
   location            = "${var.location}"
   env                 = "${var.env}"
   ilbIp               = "${var.ilbIp}"
-  resource_group_name = "${azurerm_resource_group.rg.name}"
 
   app_settings = {
     // logging vars
