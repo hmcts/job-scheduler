@@ -35,7 +35,7 @@ spring:
 
 flyway:
   schemas:
-    - ${JOB_SCHEDULER_DB_NAME:jobscheduler}
+    - public
 
 quartzProperties:
   org.quartz:
