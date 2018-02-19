@@ -49,10 +49,39 @@ module "job-scheduler-api" {
 
 module "job-scheduler-vault" {
   source              = "git@github.com:contino/moj-module-key-vault?ref=master"
-  name                = "job-scheduler-${var.env}"
-  product             = "${var.product}-${var.microservice}-vault"
+  product             = "${var.product}"
   env                 = "${var.env}"
   tenant_id           = "${var.tenant_id}"
   object_id           = "${var.jenkins_AAD_objectId}"
   resource_group_name = "${module.job-scheduler-api.resource_group_name}"
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-USER" {
+  name      = "job-scheduler-POSTGRES-USER"
+  value     = "${module.job-scheduler-database.user_name}"
+  vault_uri = "${module.job-scheduler-vault.key_vault_uri}"
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
+  name      = "job-scheduler-POSTGRES-PASS"
+  value     = "${module.job-scheduler-database.postgresql_password}"
+  vault_uri = "${module.job-scheduler-vault.key_vault_uri}"
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
+  name      = "job-scheduler-POSTGRES-HOST"
+  value     = "${module.job-scheduler-database.host_name}"
+  vault_uri = "${module.job-scheduler-vault.key_vault_uri}"
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
+  name      = "job-scheduler-POSTGRES-PORT"
+  value     = "${module.job-scheduler-database.postgresql_listen_port}"
+  vault_uri = "${module.job-scheduler-vault.key_vault_uri}"
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
+  name      = "job-scheduler-POSTGRES-DATABASE"
+  value     = "${module.job-scheduler-database.postgresql_database}"
+  vault_uri = "${module.job-scheduler-vault.key_vault_uri}"
 }
