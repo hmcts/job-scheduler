@@ -1,5 +1,5 @@
 #!groovy
-@Library("Infrastructure")
+@Library("Infrastructure@fix-harcoded-name")
 
 def type = "java"
 def product = "platform"
