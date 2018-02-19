@@ -17,7 +17,6 @@ module "job-scheduler-database" {
   product             = "${var.product}-${var.microservice}-db"
   location            = "${var.location_db}"
   env                 = "${var.env}"
-  postgresql_database = "${var.database-name}"
   postgresql_user     = "jobscheduler"
 }
 
@@ -43,7 +42,7 @@ module "job-scheduler-api" {
     JOB_SCHEDULER_DB_PORT     = "${module.job-scheduler-database.postgresql_listen_port}"
     JOB_SCHEDULER_DB_PASSWORD = "${module.job-scheduler-database.postgresql_password}"
     JOB_SCHEDULER_DB_USERNAME = "${module.job-scheduler-database.user_name}"
-    JOB_SCHEDULER_DB_NAME     = "${module.job-scheduler-database.postgresql_database}"
+    JOB_SCHEDULER_DB_NAME     = "postgres"
     JOB_SCHEDULER_DB_CONNECTION_OPTIONS = "?ssl"
   }
 }

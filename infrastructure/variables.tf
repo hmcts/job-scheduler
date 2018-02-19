@@ -32,10 +32,6 @@ variable "prod-s2s-url" {
   default = "http://betaProdccidamAppLB.reform.hmcts.net:4502"
 }
 
-variable "database-name" {
-  default = "jobscheduler"
-}
-
 variable "ilbIp" {}
 
 variable "component" {
