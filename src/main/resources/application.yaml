@@ -3,7 +3,7 @@ server:
 
 management:
   security:
-    enabled: ${MANAGEMENT_SECURITY_ENABLED:true}
+    enabled: ${MANAGEMENT_SECURITY_ENABLED:false}
 
 idam:
   s2s-auth:
