@@ -66,18 +66,20 @@ dependencyCheck {
   suppressionFile = 'dependency-check-suppressions.xml'
 }
 
-def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
-
 repositories {
   jcenter()
 }
 
+versions = [
+  springBoot: plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
+]
+
 dependencies {
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: springBootVersion
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: springBootVersion
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: springBootVersion
-  // compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: springBootVersion
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
+  // compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: versions.springBoot
   // todo: use spring-boot-starter-quartz after migrating to Spring Boot 2
 
   compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.0'
@@ -101,7 +103,7 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
 
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
+  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
   testCompile group: 'com.github.tomakehurst', name: 'wiremock-standalone', version: '2.12.0'
   testCompile group: 'org.json', name: 'json', version: '20171018'
