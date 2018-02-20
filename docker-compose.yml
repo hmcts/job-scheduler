@@ -13,7 +13,6 @@ services:
     environment:
       - S2S_URL
       - S2S_SECRET
-      - S2S_NAME
       - S2S_TTL
       - JOB_SCHEDULER_DB_USERNAME=jobscheduler
       - JOB_SCHEDULER_DB_PASSWORD
