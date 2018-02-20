@@ -3,9 +3,9 @@ plugins {
   id 'checkstyle'
   id 'pmd'
   id 'jacoco'
-  id 'io.spring.dependency-management' version '1.0.3.RELEASE'
-  id 'org.springframework.boot' version '1.5.9.RELEASE'
-  id 'org.owasp.dependencycheck' version '3.0.2'
+  id 'io.spring.dependency-management' version '1.0.4.RELEASE'
+  id 'org.springframework.boot' version '1.5.10.RELEASE'
+  id 'org.owasp.dependencycheck' version '3.1.1'
   id 'com.github.ben-manes.versions' version '0.17.0'
 }
 
@@ -66,18 +66,20 @@ dependencyCheck {
   suppressionFile = 'dependency-check-suppressions.xml'
 }
 
-def springBootVersion = plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
-
 repositories {
   jcenter()
 }
 
+def versions = [
+  springBoot: plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
+]
+
 dependencies {
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: springBootVersion
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: springBootVersion
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: springBootVersion
-  // compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: springBootVersion
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
+  // compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz', version: versions.springBoot
   // todo: use spring-boot-starter-quartz after migrating to Spring Boot 2
 
   compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.0'
@@ -93,16 +95,16 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '0.4.0'
   compile group: 'uk.gov.hmcts.reform', name: 'reform-api-standards', version: '0.3.0'
 
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix', version: '1.4.0.RELEASE'
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard', version: '1.4.0.RELEASE'
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix', version: '1.4.2.RELEASE'
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard', version: '1.4.3.RELEASE'
 
   compile group: 'org.springframework.data', name: 'spring-data-commons', version: '1.13.9.RELEASE'
 
-  compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
-  compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
+  compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.8.0'
+  compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.8.0'
 
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
+  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.0'
   testCompile group: 'com.github.tomakehurst', name: 'wiremock-standalone', version: '2.12.0'
   testCompile group: 'org.json', name: 'json', version: '20171018'
 
