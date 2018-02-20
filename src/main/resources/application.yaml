@@ -13,9 +13,9 @@ idam:
 
 spring:
   datasource:
-    url: jdbc:postgresql://${JOB_SCHEDULER_DB_HOST:job-scheduler-database}:${JOB_SCHEDULER_DB_PORT:5432}/jobscheduler
-    username: jobscheduler
-    password: ${JOB_SCHEDULER_DB_PASSWORD:}
+    url: jdbc:postgresql://${JOB_SCHEDULER_DB_HOST:job-scheduler-database}:${JOB_SCHEDULER_DB_PORT:5432}/${JOB_SCHEDULER_DB_NAME:jobscheduler}
+    username: ${JOB_SCHEDULER_DB_USERNAME:jobscheduler}
+    password: ${JOB_SCHEDULER_DB_PASSWORD:dev}
     properties:
       charSet: UTF-8
     maxWaitForConnection: 1
