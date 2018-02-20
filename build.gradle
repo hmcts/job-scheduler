@@ -17,6 +17,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 sourceSets {
+
   functionalTest {
     java {
       compileClasspath += main.output
@@ -24,6 +25,14 @@ sourceSets {
       srcDir file('src/functionalTest/java')
     }
     resources.srcDir file('src/functionalTest/resources')
+  }
+  smokeTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/smokeTest/java')
+    }
+    resources.srcDir file('src/smokeTest/resources')
   }
 }
 
@@ -43,6 +52,10 @@ task functional(type: Test) {
   description = "Runs Functional Tests"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
+}
+
+compileSmokeTestJava {
+  options.compilerArgs << "-Xlint:unchecked"
 }
 
 checkstyle {
@@ -75,6 +88,12 @@ sonarqube {
     property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
     property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/functional.exec"
   }
+}
+
+task smoke(type: Test) {
+  description = "Runs Smoke Tests"
+  testClassesDirs = sourceSets.smokeTest.output.classesDirs
+  classpath = sourceSets.smokeTest.runtimeClasspath
 }
 
 dependencyUpdates.resolutionStrategy = {
@@ -143,5 +162,9 @@ dependencies {
   functionalTestCompile sourceSets.main.runtimeClasspath
   functionalTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
   functionalTestCompile group: 'org.testcontainers', name: 'postgresql', version: '1.4.3'
+
+  smokeTestCompile sourceSets.main.runtimeClasspath
+  smokeTestCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+  smokeTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 
 }
