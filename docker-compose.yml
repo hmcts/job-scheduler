@@ -8,17 +8,15 @@ services:
         - http_proxy
         - https_proxy
         - no_proxy
-    command: --wait-for-database 30
     image: docker.artifactory.reform.hmcts.net/reform/job-scheduler-api
     container_name: job-scheduler-api
     environment:
       - S2S_URL
       - S2S_SECRET
-      - S2S_NAME
-      - S2S_TTL
-      - JOB_SCHEDULER_DB_HOST
-      - JOB_SCHEDULER_DB_PORT
+      - JOB_SCHEDULER_DB_USERNAME=jobscheduler
       - JOB_SCHEDULER_DB_PASSWORD
+      - JOB_SCHEDULER_DB_HOST=job-scheduler-database
+      - JOB_SCHEDULER_DB_PORT=5432
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
       - JSON_CONSOLE_PRETTY_PRINT
@@ -40,3 +38,8 @@ services:
       - JOB_SCHEDULER_DB_PASSWORD
     ports:
       - 5428:5432
+    volumes:
+      - job-scheduler-database-data:/var/lib/postgresql/data
+
+volumes:
+  job-scheduler-database-data:
