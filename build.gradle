@@ -95,8 +95,8 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '0.4.0'
   compile group: 'uk.gov.hmcts.reform', name: 'reform-api-standards', version: '0.3.0'
 
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix', version: '1.4.0.RELEASE'
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard', version: '1.4.0.RELEASE'
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix', version: '1.4.2.RELEASE'
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard', version: '1.4.3.RELEASE'
 
   compile group: 'org.springframework.data', name: 'spring-data-commons', version: '1.13.9.RELEASE'
 
