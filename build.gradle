@@ -4,7 +4,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.3.RELEASE'
-  id 'org.springframework.boot' version '1.5.9.RELEASE'
+  id 'org.springframework.boot' version '1.5.10.RELEASE'
   id 'org.owasp.dependencycheck' version '3.0.2'
   id 'com.github.ben-manes.versions' version '0.17.0'
 }
@@ -70,7 +70,7 @@ repositories {
   jcenter()
 }
 
-versions = [
+def versions = [
   springBoot: plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
 ]
 
