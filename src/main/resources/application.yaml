@@ -3,7 +3,7 @@ server:
 
 management:
   security:
-    enabled: ${MANAGEMENT_SECURITY_ENABLED:true}
+    enabled: ${MANAGEMENT_SECURITY_ENABLED:false}
 
 idam:
   s2s-auth:
@@ -32,6 +32,10 @@ spring:
     abandonWhenPercentageFull: 0
     testOnBorrow: true
     validationQuery: SELECT 1
+
+flyway:
+  schemas:
+    - public
 
 quartzProperties:
   org.quartz:

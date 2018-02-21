@@ -8,6 +8,7 @@ plugins {
   id 'org.owasp.dependencycheck' version '3.1.1'
   id 'com.github.ben-manes.versions' version '0.17.0'
   id 'org.sonarqube' version '2.6.1'
+  id "org.flywaydb.flyway" version "5.0.7"
 }
 
 group = 'uk.gov.hmcts.reform'
@@ -87,6 +88,7 @@ sonarqube {
     property "sonar.projectName", "Reform :: Job Scheduler"
     property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
     property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/functional.exec"
+    property 'sonar.coverage.exclusions', "**/src/main/java/uk/gov/hmcts/reform/jobscheduler/config/**"
   }
 }
 
@@ -94,6 +96,13 @@ task smoke(type: Test) {
   description = "Runs Smoke Tests"
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
   classpath = sourceSets.smokeTest.runtimeClasspath
+}
+
+task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
+  baselineOnMigrate = true
+  if (project.hasProperty("dburl")) {
+    url = "jdbc:postgresql://${dburl}"
+  }
 }
 
 dependencyUpdates.resolutionStrategy = {
@@ -118,6 +127,10 @@ dependencyCheck {
 }
 
 repositories {
+  // until new projects get to jcenter
+  maven {
+    url "https://dl.bintray.com/hmcts/hmcts-maven"
+  }
   jcenter()
 }
 

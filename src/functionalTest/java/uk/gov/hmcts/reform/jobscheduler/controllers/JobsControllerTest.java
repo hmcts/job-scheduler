@@ -39,7 +39,7 @@ public class JobsControllerTest {
                     + "\"sort\":null,"
                     + "\"first\":true,"
                     + "\"number_of_elements\":0"
-                    + "}"
+                + "}"
             ))
             .andReturn();
     }
