@@ -88,6 +88,7 @@ sonarqube {
     property "sonar.projectName", "Reform :: Job Scheduler"
     property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
     property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/functional.exec"
+    property 'sonar.coverage.exclusions', "**/src/main/java/uk/gov/hmcts/reform/jobscheduler/config/**"
   }
 }
 
