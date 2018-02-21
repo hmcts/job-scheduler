@@ -5,7 +5,7 @@ def type = "java"
 def product = "platform"
 def component = "job-scheduler"
 
-def channel = '#rpe'
+def channel = '#rpe-build-notices'
 
 withPipeline(type , product, component) {
     before('build') {
