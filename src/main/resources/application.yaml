@@ -7,6 +7,7 @@ management:
 
 idam:
   s2s-auth:
+    useStub: false
     url: ${S2S_URL}
     secret: ${S2S_SECRET}
     microservice: ${S2S_NAME:jobscheduler}

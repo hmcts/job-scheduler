@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
+import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.jobscheduler.model.Job;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
@@ -39,9 +39,9 @@ public class JobsController {
     public static final int MAX_PAGE_SIZE = 100;
 
     private final JobsService jobsService;
-    private final ServiceAuthTokenValidator authTokenValidator;
+    private final AuthTokenValidator authTokenValidator;
 
-    public JobsController(JobsService jobsService, ServiceAuthTokenValidator authTokenValidator) {
+    public JobsController(JobsService jobsService, AuthTokenValidator authTokenValidator) {
         this.jobsService = jobsService;
         this.authTokenValidator = authTokenValidator;
     }

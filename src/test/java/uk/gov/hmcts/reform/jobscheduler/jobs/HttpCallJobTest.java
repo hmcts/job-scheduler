@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.jobscheduler.jobs;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -49,8 +51,11 @@ public class HttpCallJobTest {
     private static final String CUSTOM_VALUE = "anything";
     private static final String JOB_ID = "jobId123";
 
+    @ClassRule
+    public static WireMockClassRule wireMockClassRule = new WireMockClassRule(options().dynamicHttpsPort());
+
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule();
+    public WireMockClassRule wireMockRule = wireMockClassRule;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
