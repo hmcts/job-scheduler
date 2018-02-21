@@ -1,0 +1,15 @@
+#!groovy
+@Library("Infrastructure")
+
+def type = "java"
+def product = "platform"
+def component = "job-scheduler"
+
+def channel = '#rpe'
+
+withPipeline(type , product, component) {
+    before('build') {
+      sh './gradlew check'
+    }
+    enableSlackNotifications(channel)
+}

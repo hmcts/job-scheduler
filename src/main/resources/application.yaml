@@ -10,7 +10,7 @@ idam:
     useStub: false
     url: ${S2S_URL}
     secret: ${S2S_SECRET}
-    microservice: ${S2S_NAME:jobscheduler}
+    microservice: ${REFORM_SERVICE_NAME:jobscheduler}
 
 spring:
   datasource:
