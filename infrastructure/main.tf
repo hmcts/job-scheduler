@@ -48,12 +48,13 @@ module "job-scheduler-api" {
 }
 
 module "job-scheduler-vault" {
-  source              = "git@github.com:contino/moj-module-key-vault?ref=master"
-  product             = "${var.product}"
-  env                 = "${var.env}"
-  tenant_id           = "${var.tenant_id}"
-  object_id           = "${var.jenkins_AAD_objectId}"
-  resource_group_name = "${module.job-scheduler-api.resource_group_name}"
+  source                  = "git@github.com:contino/moj-module-key-vault?ref=master"
+  product                 = "${var.product}"
+  env                     = "${var.env}"
+  tenant_id               = "${var.tenant_id}"
+  object_id               = "${var.jenkins_AAD_objectId}"
+  resource_group_name     = "${module.job-scheduler-api.resource_group_name}"
+  product_group_object_id = "38f9dea6-e861-4a50-9e73-21e64f563537"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
