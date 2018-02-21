@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
 import uk.gov.hmcts.reform.jobscheduler.FixtureData;
 import uk.gov.hmcts.reform.jobscheduler.controllers.JobsController;
 import uk.gov.hmcts.reform.jobscheduler.model.JobData;
-import uk.gov.hmcts.reform.jobscheduler.model.PageRequest;
+import uk.gov.hmcts.reform.jobscheduler.model.JobSchedulerPageRequest;
 import uk.gov.hmcts.reform.jobscheduler.model.Pages;
 import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobsService;
 
@@ -151,7 +151,7 @@ public class GetAllTest {
             jobs = Collections.nCopies(Math.min(copies, size), new JobData("some-id", validJob()));
         }
 
-        Page<JobData> pages = new Pages<>(jobs, PageRequest.of(page, size), total);
+        Page<JobData> pages = new Pages<>(jobs, JobSchedulerPageRequest.of(page, size), total);
         when(jobsService.getAll(anyString(), anyInt(), anyInt())).thenReturn(pages);
 
         return sendGet("/jobs?page=" + page + "&size=" + size);
