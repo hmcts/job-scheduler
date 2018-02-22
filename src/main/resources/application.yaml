@@ -20,10 +20,10 @@ spring:
     password: ${JOB_SCHEDULER_DB_PASSWORD:}
     properties:
       charSet: UTF-8
-    maxWaitForConnection: 1
+    maxWaitForConnection: 2000
     minSize: 8
     maxSize: 32
-    evictionInterval: 10
+    evictionInterval: 10000
     minIdleTime: 1 minute
     checkConnectionWhileIdle: true
     checkConnectionOnReturn: true
