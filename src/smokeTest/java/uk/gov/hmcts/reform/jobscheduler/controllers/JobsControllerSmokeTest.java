@@ -29,6 +29,7 @@ public class JobsControllerSmokeTest {
     @Test
     public void create_jobs_should_require_s2s_auth() {
         RestAssured.given()
+            .relaxedHTTPSValidation()
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
             .when().post("/jobs").then().statusCode(400);
     }
@@ -36,6 +37,7 @@ public class JobsControllerSmokeTest {
     @Test
     public void retrieve_jobs_should_require_s2s_auth() {
         RestAssured.given()
+            .relaxedHTTPSValidation()
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
             .when().get("/jobs").then().statusCode(400);
     }
