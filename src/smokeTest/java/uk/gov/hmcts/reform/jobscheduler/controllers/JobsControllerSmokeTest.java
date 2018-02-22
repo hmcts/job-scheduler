@@ -3,26 +3,33 @@ package uk.gov.hmcts.reform.jobscheduler.controllers;
 import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
+import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
+
 public class JobsControllerSmokeTest {
 
-    @Value("${default-test-url:http://localhost:8484}")
-    private String testUrl;
-
     @Before
-    public void setup() {
-        System.out.println(testUrl);
-        RestAssured.baseURI = testUrl;
+    public void setup() throws IOException {
+        Map<String, String> env = System.getenv();
+        if (env.get("TEST_URL") == null) {
+            Resource resource = new ClassPathResource("/smoke-application.properties");
+            Properties props = PropertiesLoaderUtils.loadProperties(resource);
+            RestAssured.baseURI = props.getProperty("default-test-url");
+        } else {
+            RestAssured.baseURI = env.get("TEST_URL");
+        }
     }
 
     @Test
     public void create_jobs_should_require_s2s_auth() {
         RestAssured.given()
+            .relaxedHTTPSValidation()
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
             .when().post("/jobs").then().statusCode(400);
     }
@@ -30,6 +37,7 @@ public class JobsControllerSmokeTest {
     @Test
     public void retrieve_jobs_should_require_s2s_auth() {
         RestAssured.given()
+            .relaxedHTTPSValidation()
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
             .when().get("/jobs").then().statusCode(400);
     }
