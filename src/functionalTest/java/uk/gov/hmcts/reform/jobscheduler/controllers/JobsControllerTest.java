@@ -73,10 +73,10 @@ public class JobsControllerTest {
     }
 
     @Test
-    public void should_not_create_a_new_job_and_throw_4xx_client_error_when_empty_job_input_is_passed()
+    public void should_throw_400_bad_request_when_empty_job_input_is_passed()
         throws Exception {
         sendPostRequest("")
-            .andExpect(status().is4xxClientError())
+            .andExpect(status().isBadRequest())
             .andReturn();
     }
 
@@ -95,13 +95,17 @@ public class JobsControllerTest {
 
         sendDeleteRequest(jobId)
             .andExpect(status().isNoContent());
+
+        //confirm the job is deleted
+        sendDeleteRequest(jobId)
+            .andExpect(status().isNotFound());
     }
 
     @Test
-    public void should_not_delete_job_and_throw_job_not_exception_when_non_existing_job_id_is_passed()
+    public void should_throw_job_not_found_exception_when_non_existing_job_id_is_passed()
         throws Exception {
         MvcResult mvcResult = sendDeleteRequest(UUID.randomUUID().toString())
-            .andExpect(status().is4xxClientError())
+            .andExpect(status().isNotFound())
             .andReturn();
 
         assertThat(mvcResult.getResolvedException())
