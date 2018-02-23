@@ -20,18 +20,18 @@ spring:
     password: ${JOB_SCHEDULER_DB_PASSWORD:}
     properties:
       charSet: UTF-8
-    maxWaitForConnection: 2000
-    minSize: 8
-    maxSize: 32
-    evictionInterval: 10000
-    minIdleTime: 1 minute
-    checkConnectionWhileIdle: true
-    checkConnectionOnReturn: true
+    # http://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html#Common_Attributes
+    maxActive: 20
+    maxIdle: 20
+    minIdle: 5
+    testOnBorrow: true
+    validationQuery: SELECT 1
+    timeBetweenEvictionRunsMillis: 10000
+    testWhileIdle: true
+    testOnReturn: true
     removeAbandoned: true
     removeAbandonedTimeout: 60
     abandonWhenPercentageFull: 0
-    testOnBorrow: true
-    validationQuery: SELECT 1
 
 quartzProperties:
   org.quartz:
