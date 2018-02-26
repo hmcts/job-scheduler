@@ -53,6 +53,8 @@ task functional(type: Test) {
   description = "Runs Functional Tests"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
+
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "some-key")
 }
 
 compileSmokeTestJava {
@@ -128,6 +130,10 @@ dependencyCheck {
 
 repositories {
   jcenter()
+
+  maven {
+    url "https://dl.bintray.com/hmcts/hmcts-maven"
+  }
 }
 
 def versions = [
@@ -152,6 +158,7 @@ dependencies {
 
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: versions.reformLogging
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformLogging
+  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformLogging
   compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '1.1.0'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '0.4.2'
   compile group: 'uk.gov.hmcts.reform', name: 'reform-api-standards', version: '0.3.0'
