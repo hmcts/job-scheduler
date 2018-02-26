@@ -26,6 +26,8 @@ module "job-scheduler-api" {
   location            = "${var.location}"
   env                 = "${var.env}"
   ilbIp               = "${var.ilbIp}"
+  is_frontend         = false
+  subscription        = "${var.subscription}"
 
   app_settings = {
     // logging vars
