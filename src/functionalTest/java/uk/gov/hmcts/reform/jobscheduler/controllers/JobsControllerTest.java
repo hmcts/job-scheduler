@@ -64,7 +64,7 @@ public class JobsControllerTest {
 
         //then
         //Create a new URI object which will validate whether the url we got back is an uri or not.
-        URI newJobUri = new URI(mvcResult.getResponse().getRedirectedUrl());
+        URI newJobUri = new URI(mvcResult.getResponse().getHeader("Location"));
 
         assertThat(newJobUri).isNotNull();
 
