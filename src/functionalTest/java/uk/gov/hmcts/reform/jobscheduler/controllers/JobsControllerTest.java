@@ -12,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions.JobNotFoundException;
 
 import java.net.URI;
 import java.nio.file.Path;
@@ -105,7 +104,7 @@ public class JobsControllerTest {
     @Test
     public void should_throw_job_not_found_exception_when_non_existing_job_id_is_passed()
         throws Exception {
-        MvcResult mvcResult = sendDeleteRequest(UUID.randomUUID().toString())
+        sendDeleteRequest(UUID.randomUUID().toString())
             .andExpect(status().isNotFound())
             .andReturn();
     }
