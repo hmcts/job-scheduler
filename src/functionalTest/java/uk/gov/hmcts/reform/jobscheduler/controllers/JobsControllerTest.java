@@ -108,9 +108,6 @@ public class JobsControllerTest {
         MvcResult mvcResult = sendDeleteRequest(UUID.randomUUID().toString())
             .andExpect(status().isNotFound())
             .andReturn();
-
-        assertThat(mvcResult.getResolvedException())
-            .isExactlyInstanceOf(JobNotFoundException.class);
     }
 
     @Test
