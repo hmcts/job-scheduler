@@ -13,7 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @TestPropertySource("/smoke-application.properties")
 public class JobsControllerSmokeTest {
 
-    @Value("${default-test-url}")
+    @Value("${test-url}")
     private String testUrl;
 
     @Before
