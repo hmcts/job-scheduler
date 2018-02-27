@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.jobscheduler.logging.AppInsights;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
+import uk.gov.hmcts.reform.jobscheduler.services.jobs.JobDataKeys;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -49,10 +50,11 @@ public class HttpCallJob implements Job {
 
         logger.info("Executing job {}", jobId);
 
+        HttpAction action = null;
         Instant start = Instant.now();
 
         try {
-            HttpAction action = actionExtractor.extract(context)
+            action = actionExtractor.extract(context)
                 .withHeader("ServiceAuthorization", tokenGenerator.generate());
 
             ResponseEntity<String> response =
@@ -64,11 +66,11 @@ public class HttpCallJob implements Job {
                         String.class
                     );
 
-            insights.trackHttpCallJobExecution(Duration.between(start, Instant.now()), true);
+            trackSuccess(jobId, start, context.getMergedJobDataMap().getInt(JobDataKeys.ATTEMPT), action);
 
             logger.info("Job {} executed. Response code: {}", jobId, response.getStatusCodeValue());
         } catch (Exception e) {
-            insights.trackHttpCallJobExecution(Duration.between(start, Instant.now()), false);
+            trackFailure(jobId, start, context.getMergedJobDataMap().getInt(JobDataKeys.ATTEMPT), action);
 
             String errorMessage = String.format("Job failed. Job ID: %s", jobId);
             logger.error(errorMessage, e);
@@ -82,5 +84,18 @@ public class HttpCallJob implements Job {
         action.headers.forEach(httpHeaders::add);
 
         return new HttpEntity<>(action.body, httpHeaders);
+    }
+
+    private void trackSuccess(String jobId, Instant started, int attempt, HttpAction action) {
+        insights.trackHttpCallJobExecution(Duration.between(started, Instant.now()), true);
+        insights.trackJobDetails(jobId, attempt, action.url, action.method, action.body, true);
+    }
+
+    private void trackFailure(String jobId, Instant started, int attempt, HttpAction action) {
+        insights.trackHttpCallJobExecution(Duration.between(started, Instant.now()), false);
+
+        if (action != null) {
+            insights.trackJobDetails(jobId, attempt, action.url, action.method, action.body, false);
+        }
     }
 }
