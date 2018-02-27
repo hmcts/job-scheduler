@@ -23,17 +23,18 @@ spring:
     properties:
       charSet: UTF-8
     # http://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html#Common_Attributes
-    maxActive: 20
-    maxIdle: 20
-    minIdle: 5
-    testOnBorrow: true
-    validationQuery: SELECT 1
-    timeBetweenEvictionRunsMillis: 10000
-    testWhileIdle: true
-    testOnReturn: true
-    removeAbandoned: true
-    removeAbandonedTimeout: 60
-    abandonWhenPercentageFull: 0
+    tomcat:
+      max-active: 10
+      max-idle: 10
+      min-idle: 2
+      test-on-borrow: true
+      validation-query: SELECT 1
+      time-between-eviction-runs-millis: 10000
+      test-while-idle: true
+      test-on-return: true
+      remove-abandoned: true
+      remove-abandoned-timeout: 60
+      abandon-when-percentage-full: 0
 
 quartzProperties:
   org.quartz:
