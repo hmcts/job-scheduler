@@ -6,14 +6,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@TestPropertySource("/smoke-application.properties")
 public class JobsControllerSmokeTest {
 
-    @Value("${test-url}")
+    @Value("${test-url:http://localhost:8484}")
     private String testUrl;
 
     @Before
