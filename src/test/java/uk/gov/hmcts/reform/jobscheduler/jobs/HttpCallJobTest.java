@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.jobscheduler.logging.AppInsights;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 
 import java.util.Collections;
@@ -66,6 +67,7 @@ public class HttpCallJobTest {
     @Mock private ActionExtractor actionExtractor;
     @Mock private JobExecutionContext context;
     @Mock private AuthTokenGenerator authTokenGenerator;
+    @Mock private AppInsights insights;
 
     @Before
     public void setup() {
@@ -178,7 +180,7 @@ public class HttpCallJobTest {
 
         actionHadHeadersSetTo(ImmutableMap.of("header", "value"));
 
-        HttpCallJob job = new HttpCallJob(mockRestTemplate, actionExtractor, authTokenGenerator);
+        HttpCallJob job = new HttpCallJob(mockRestTemplate, actionExtractor, authTokenGenerator, insights);
 
         assertThatThrownBy(
             () -> job.execute(context)
@@ -224,6 +226,6 @@ public class HttpCallJobTest {
     }
 
     private void executingHttpCallJob() throws JobExecutionException {
-        new HttpCallJob(restTemplate, actionExtractor, authTokenGenerator).execute(context);
+        new HttpCallJob(restTemplate, actionExtractor, authTokenGenerator, insights).execute(context);
     }
 }

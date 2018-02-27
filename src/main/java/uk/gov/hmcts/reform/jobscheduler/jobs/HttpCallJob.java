@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.jobscheduler.logging.AppInsights;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 
 @Component
@@ -25,15 +26,18 @@ public class HttpCallJob implements Job {
     private final RestTemplate restTemplate;
     private final ActionExtractor actionExtractor;
     private final AuthTokenGenerator tokenGenerator;
+    private final AppInsights insights;
 
     public HttpCallJob(
         RestTemplate restTemplate,
         ActionExtractor actionExtractor,
-        AuthTokenGenerator tokenGenerator
+        AuthTokenGenerator tokenGenerator,
+        AppInsights insights
     ) {
         this.restTemplate = restTemplate;
         this.actionExtractor = actionExtractor;
         this.tokenGenerator = tokenGenerator;
+        this.insights = insights;
     }
 
     @Override
