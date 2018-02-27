@@ -3,27 +3,25 @@ package uk.gov.hmcts.reform.jobscheduler.controllers;
 import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Properties;
-
+@RunWith(SpringRunner.class)
+@Configuration
+@TestPropertySource("/smoke-application.properties")
 public class JobsControllerSmokeTest {
 
+    @Value("${default-test-url}")
+    private String testUrl;
+
     @Before
-    public void setup() throws IOException {
-        Map<String, String> env = System.getenv();
-        if (env.get("TEST_URL") == null) {
-            Resource resource = new ClassPathResource("/smoke-application.properties");
-            Properties props = PropertiesLoaderUtils.loadProperties(resource);
-            RestAssured.baseURI = props.getProperty("default-test-url");
-        } else {
-            RestAssured.baseURI = env.get("TEST_URL");
-        }
+    public void setup() {
+        System.out.println("Test URL " + testUrl);
+        RestAssured.baseURI = testUrl;
     }
 
     @Test
