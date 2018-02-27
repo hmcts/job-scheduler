@@ -16,6 +16,9 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.jobscheduler.logging.AppInsights;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 
+import java.time.Duration;
+import java.time.Instant;
+
 @Component
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
@@ -44,9 +47,11 @@ public class HttpCallJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         String jobId = context.getJobDetail().getKey().getName();
 
-        try {
-            logger.info("Executing job " + jobId);
+        logger.info("Executing job {}", jobId);
 
+        Instant start = Instant.now();
+
+        try {
             HttpAction action = actionExtractor.extract(context)
                 .withHeader("ServiceAuthorization", tokenGenerator.generate());
 
@@ -59,10 +64,15 @@ public class HttpCallJob implements Job {
                         String.class
                     );
 
+            insights.trackHttpCallJobExecution(Duration.between(start, Instant.now()), true);
+
             logger.info("Job {} executed. Response code: {}", jobId, response.getStatusCodeValue());
         } catch (Exception e) {
+            insights.trackHttpCallJobExecution(Duration.between(start, Instant.now()), false);
+
             String errorMessage = String.format("Job failed. Job ID: %s", jobId);
             logger.error(errorMessage, e);
+
             throw new JobExecutionException(errorMessage, e);
         }
     }

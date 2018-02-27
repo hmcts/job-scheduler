@@ -7,6 +7,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.jobscheduler.logging.AppInsights;
 import uk.gov.hmcts.reform.jobscheduler.model.HttpAction;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 
@@ -33,7 +35,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -76,11 +77,11 @@ public class HttpCallJobTest {
                 .willReturn(aResponse().withStatus(200))
         );
 
-        given(context.getJobDetail())
+        BDDMockito.given(context.getJobDetail())
             .willReturn(newJob(HttpCallJob.class).withIdentity(JOB_ID, "group").build());
 
-        given(authTokenGenerator.generate()).willReturn(NEW_S2S_TOKEN);
-        given(actionExtractor.extract(any())).willReturn(createSampleAction());
+        BDDMockito.given(authTokenGenerator.generate()).willReturn(NEW_S2S_TOKEN);
+        BDDMockito.given(actionExtractor.extract(any())).willReturn(createSampleAction());
     }
 
     @Test
@@ -93,6 +94,7 @@ public class HttpCallJobTest {
 
         // then
         verify(postRequestedFor(urlEqualTo(TEST_PATH)));
+        BDDMockito.verify(insights).trackHttpCallJobExecution(any(Duration.class), eq(true));
     }
 
     @Test
@@ -108,6 +110,7 @@ public class HttpCallJobTest {
             postRequestedFor(urlEqualTo(TEST_PATH))
                 .withRequestBody(equalTo(TEST_BODY))
         );
+        BDDMockito.verify(insights).trackHttpCallJobExecution(any(Duration.class), eq(true));
     }
 
     @Test
@@ -123,6 +126,7 @@ public class HttpCallJobTest {
             postRequestedFor(urlEqualTo(TEST_PATH))
                 .withHeader(SERVICE_AUTHORIZATION_HEADER, equalTo(NEW_S2S_TOKEN))
         );
+        BDDMockito.verify(insights).trackHttpCallJobExecution(any(Duration.class), eq(true));
     }
 
     @Test
@@ -138,6 +142,7 @@ public class HttpCallJobTest {
             postRequestedFor(urlEqualTo(TEST_PATH))
                 .withHeader(SERVICE_AUTHORIZATION_HEADER, equalTo(NEW_S2S_TOKEN))
         );
+        BDDMockito.verify(insights).trackHttpCallJobExecution(any(Duration.class), eq(true));
     }
 
     @Test
@@ -153,6 +158,7 @@ public class HttpCallJobTest {
             postRequestedFor(urlEqualTo(TEST_PATH))
                 .withHeader(X_CUSTOM_HEADER, equalTo(CUSTOM_VALUE))
         );
+        BDDMockito.verify(insights).trackHttpCallJobExecution(any(Duration.class), eq(true));
     }
 
     @Test
@@ -169,7 +175,7 @@ public class HttpCallJobTest {
     public void execute_should_fail_when_rest_client_fails() {
         RestTemplate mockRestTemplate = mock(RestTemplate.class);
 
-        given(
+        BDDMockito.given(
             mockRestTemplate.exchange(
                 anyString(),
                 any(HttpMethod.class),
@@ -189,6 +195,8 @@ public class HttpCallJobTest {
         ).hasMessage(
             String.format("Job failed. Job ID: %s", JOB_ID)
         ).hasCauseInstanceOf(RestClientException.class);
+
+        BDDMockito.verify(insights).trackHttpCallJobExecution(any(Duration.class), eq(false));
     }
 
     private void assertExecuteFailsForResponseStatus(int responseStatus) {
@@ -205,10 +213,12 @@ public class HttpCallJobTest {
         ).hasMessage(
             String.format("Job failed. Job ID: %s", JOB_ID)
         ).hasCauseInstanceOf(HttpStatusCodeException.class);
+
+        BDDMockito.verify(insights).trackHttpCallJobExecution(any(Duration.class), eq(false));
     }
 
     private void actionHadHeadersSetTo(Map<String, String> headers) {
-        given(actionExtractor.extract(context))
+        BDDMockito.given(actionExtractor.extract(context))
             .willReturn(createSampleAction(headers));
     }
 
