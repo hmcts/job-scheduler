@@ -20,7 +20,6 @@ public class JobsControllerSmokeTest {
 
     @Before
     public void setup() {
-        System.out.println("Test URL " + testUrl);
         RestAssured.baseURI = testUrl;
     }
 
