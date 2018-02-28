@@ -13,6 +13,8 @@ idam:
     microservice: ${REFORM_SERVICE_NAME:jobscheduler}
 
 spring:
+  application:
+    name: Job Scheduler
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${JOB_SCHEDULER_DB_HOST:job-scheduler-database}:${JOB_SCHEDULER_DB_PORT:5432}/${JOB_SCHEDULER_DB_NAME:jobscheduler}${JOB_SCHEDULER_DB_CONNECTION_OPTIONS:}
