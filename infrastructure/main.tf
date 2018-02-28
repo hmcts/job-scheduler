@@ -51,6 +51,7 @@ module "job-scheduler-api" {
 
 module "job-scheduler-vault" {
   source                  = "git@github.com:contino/moj-module-key-vault?ref=master"
+  name                    = "${var.product}-${var.microservice}-${var.env}"
   product                 = "${var.product}"
   env                     = "${var.env}"
   tenant_id               = "${var.tenant_id}"

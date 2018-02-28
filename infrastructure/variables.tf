@@ -1,6 +1,6 @@
 variable "product" {
   type    = "string"
-  default = "platform"
+  default = "rpe"
 }
 
 variable "microservice" {
