@@ -1,5 +1,5 @@
 #!groovy
-@Library("Infrastructure@fix-az-race-condition")
+@Library("Infrastructure")
 
 def type = "java"
 def product = "rpe"
