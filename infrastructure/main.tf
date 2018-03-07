@@ -4,12 +4,8 @@ provider "vault" {
   address = "https://vault.reform.hmcts.net:6200"
 }
 
-locals {
-  vault_section = "${var.env == "prod" ? "prod" : "test"}"
-}
-
 data "vault_generic_secret" "s2s_secret" {
-  path = "secret/${local.vault_section}/ccidam/service-auth-provider/api/microservice-keys/platformJobScheduler"
+  path = "secret/${var.vault_section}/ccidam/service-auth-provider/api/microservice-keys/platformJobScheduler"
 }
 
 module "job-scheduler-database" {
@@ -36,7 +32,7 @@ module "job-scheduler-api" {
     REFORM_ENVIRONMENT  = "${var.env}"
 
     // IdAM s2s
-    S2S_URL     = "${var.env == "prod" ? var.prod-s2s-url : var.test-s2s-url}"
+    S2S_URL     = "${var.s2s_url}"
     S2S_SECRET  = "${data.vault_generic_secret.s2s_secret.data["value"]}"
 
     // db vars

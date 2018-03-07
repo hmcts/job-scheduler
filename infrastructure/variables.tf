@@ -22,14 +22,14 @@ variable "env" {
   type    = "string"
 }
 
-variable "test-s2s-url" {
-  type    = "string"
-  default = "http://betaDevBccidamS2SLB.reform.hmcts.net"
+variable "vault_section" {
+  type        = "string"
+  description = "Name of the environment-specific section in Vault key path, i.e. secret/{vault_section}/..."
+  default     = "dev"
 }
 
-variable "prod-s2s-url" {
-  type    = "string"
-  default = "https://prod-s2s-api.reform.hmcts.net:3511"
+variable s2s_url {
+  default = "http://betaDevBccidamS2SLB.reform.hmcts.net"
 }
 
 variable "ilbIp" {}
@@ -49,6 +49,6 @@ variable "client_id" {
 variable "subscription" {}
 
 variable "jenkins_AAD_objectId" {
-  type                        = "string"
-  description                 = "(Required) The Azure AD object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies."
+  type        = "string"
+  description = "(Required) The Azure AD object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies."
 }
