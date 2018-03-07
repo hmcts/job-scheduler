@@ -5,7 +5,7 @@ variable "product" {
 
 variable "microservice" {
   type    = "string"
-  default = "job-scheduler"
+  default = "jobscheduler"
 }
 
 variable "location" {
