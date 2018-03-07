@@ -29,7 +29,7 @@ variable "test-s2s-url" {
 
 variable "prod-s2s-url" {
   type    = "string"
-  default = "http://betaProdccidamAppLB.reform.hmcts.net:4502"
+  default = "https://prod-s2s-api.reform.hmcts.net:3511"
 }
 
 variable "ilbIp" {}
