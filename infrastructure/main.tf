@@ -9,7 +9,7 @@ data "vault_generic_secret" "s2s_secret" {
 }
 
 module "job-scheduler-database" {
-  source              = "git@github.com:contino/moj-module-postgres.git?ref=master"
+  source              = "git@github.com:contino/moj-module-postgres.git?ref=feature/ssl-enforcement"
   product             = "${var.product}-${var.microservice}-db"
   location            = "${var.location_db}"
   env                 = "${var.env}"
