@@ -137,7 +137,7 @@ repositories {
 }
 
 def versions = [
-  reformLogging: '2.0.0',
+  reformLogging: '2.0.2',
   springBoot: plugins.getPlugin('org.springframework.boot').class.package.implementationVersion
 ]
 
@@ -188,4 +188,8 @@ dependencies {
 
 jar {
   archiveName 'job-scheduler.jar'
+
+  manifest {
+    attributes('Implementation-Version': project.version.toString())
+  }
 }
