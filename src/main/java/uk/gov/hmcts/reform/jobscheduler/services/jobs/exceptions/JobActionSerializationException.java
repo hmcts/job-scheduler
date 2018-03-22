@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.jobscheduler.services.jobs.exceptions;
 
-public class JobActionSerializationException extends RuntimeException {
+import uk.gov.hmcts.reform.logging.exception.AlertLevel;
+import uk.gov.hmcts.reform.logging.exception.UnknownErrorCodeException;
+
+public class JobActionSerializationException extends UnknownErrorCodeException {
 
     public JobActionSerializationException(String message, Throwable cause) {
-        super(message, cause);
+        super(AlertLevel.P2, message, cause);
     }
 }
